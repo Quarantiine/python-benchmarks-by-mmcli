@@ -65,3 +65,17 @@ Instead of a basic CLI that prints out text, we use **Textual** and **Plotext** 
 - **Rich Tree Generation**: The AST provides a `.to_tree()` method. When the expression is parsed, Textual renders this structure visually in the left pane using color-coded folders.
 - **Step Tracing**: We intercept the AST calls. We first print the `__str__` representation of the parsed input. We then call `.differentiate()` and print the unsimplified form. Finally, we call `.simplify()` and print the output.
 - **Plotext Integration**: Using the `.evaluate()` method, we iterate an `x` value from `-10` to `10`. `Plotext` calculates terminal coordinates to draw an ANSI-colored scatterplot, which is immediately piped back into a Textual `Static` widget.
+
+---
+
+## Folder Tree
+
+```
+antigravity-ide-calculus/
+├── README.md
+├── SYSTEM_ARCHITECTURE.md
+├── __init__.py
+├── __main__.py
+├── ast.py
+└── parser.py
+```

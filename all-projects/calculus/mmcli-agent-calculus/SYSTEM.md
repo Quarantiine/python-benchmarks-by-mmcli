@@ -249,3 +249,29 @@ Provides pedagogical step breakdowns for operations:
 
 - **Curses Terminal UI (`run_curses_tui`):** Full interactive modal navigation, live string parsing preview, AST visualization, and operational tab switching.
 - **CLI Subcommand Wrapper (`cli.py`):** Structured command-line tool supporting subcommands (`diff`, `int`, `lim`, `simplify`, `eval`, `tree`) with formatting flags (`--format`, `--steps`, `--verbose`).
+
+---
+
+## Folder Tree
+
+```
+mmcli-agent-calculus/
+├── README.md
+├── SYSTEM.md
+├── __init__.py
+├── __main__.py
+├── ast.py
+├── cli.py
+├── diff.py
+├── integrate.py
+├── limits.py
+├── mmcli-agentic-logs.bash
+├── parser.py
+├── render.py
+├── simplify.py
+├── tests
+│   ├── test_calculus.py
+│   ├── test_cli.py
+│   └── test_tui.py
+└── tui.py
+```
