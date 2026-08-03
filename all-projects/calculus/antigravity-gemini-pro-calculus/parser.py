@@ -1,5 +1,5 @@
 import re
-from .ast import (
+from math_ast import (
     Node, ConstNode, VarNode, AddNode, SubNode,
     MulNode, DivNode, PowNode, SinNode, CosNode
 )

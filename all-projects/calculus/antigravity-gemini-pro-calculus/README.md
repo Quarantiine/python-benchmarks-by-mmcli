@@ -18,18 +18,18 @@ From the workspace root directory:
 
 ```bash
 # Direct execution via Python
-python3 all-projects/calculus/antigravity-ide-calculus/__main__.py
+python3 all-projects/calculus/antigravity-gemini-pro-calculus/__main__.py
 ```
 
 Or navigate to the subproject directory directly:
 
 ```bash
-cd all-projects/calculus/antigravity-ide-calculus
+cd all-projects/calculus/antigravity-gemini-pro-calculus
 python3 __main__.py
 ```
 
 > **Important Note on `PYTHONPATH`:**
-> Do NOT set `PYTHONPATH=all-projects/calculus/antigravity-ide-calculus` or `PYTHONPATH=all-projects/calculus`. Doing so causes the local `ast.py` file to shadow Python's standard library `ast` module, breaking dependencies like `textual` and `rich`. Run the script directly via `__main__.py` as shown above.
+> Do NOT set `PYTHONPATH=all-projects/calculus/antigravity-gemini-pro-calculus` or `PYTHONPATH=all-projects/calculus`. Doing so causes the local `ast.py` file to shadow Python's standard library `ast` module, breaking dependencies like `textual` and `rich`. Run the script directly via `__main__.py` as shown above.
 
 ## How to Use the Interface
 

@@ -4,8 +4,8 @@ from textual.widgets import Header, Footer, Input, Static, Tree as TextualTree
 from textual.reactive import reactive
 import plotext as plt
 
-from .parser import parse_expr, ParseError
-from .ast import Node
+from parser import parse_expr, ParseError
+from math_ast import Node
 
 class GraphWidget(Static):
     def plot(self, ast_node: Node, var_name: str = "x"):
@@ -90,7 +90,7 @@ class CalculusApp(App):
     def populate_tree(self, node: Node, tree_widget: TextualTree):
         tree_widget.clear()
         
-        from .ast import (
+        from math_ast import (
             ConstNode, VarNode, AddNode, SubNode, 
             MulNode, DivNode, PowNode, SinNode, CosNode
         )
