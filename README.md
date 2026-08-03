@@ -104,7 +104,7 @@ $$\frac{\sin(x^2 \cos(3x))}{(x^3 + 2x)^2}$$
 
 - **Verdict:** **Superior overall engine.** Broadest math scope, richest feature set, and highest verified test coverage.
 
-### 🥈 Gemini 3.6 Flash (Antigravity IDE): 7.8 / 10
+### 🥈 Gemini 3.6 Flash (Antigravity IDE): 8 / 10
 
 - **The Good:** The strongest differentiation-only engine. Zero runtime dependencies, 13/13 passing tests (`pytest`), clean package structure (`core/ast.py`), and **superior error handling** — explicitly rejects unsupported Unicode characters (`ValueError: Unexpected character`) rather than computing a silent wrong answer.
 
