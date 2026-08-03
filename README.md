@@ -51,8 +51,32 @@ Our primary benchmark showcase features three independent implementations of a *
 
 ---
 
-## 📈 Key Takeaways from Agentic Benchmarking
+## 📈 Key Takeaways from building a Calculus Engine from scratch
 
 1. **Zero-Dependency Robustness vs. UI Frameworks**: Both `mmcli` and `antigravity-opus-calculus` successfully engineered complete symbolic calculus engines using **pure Python standard library modules only** (Curses). `antigravity-gemini-pro-calculus` leveraged heavy 3rd-party libraries (`textual`, `plotext`) for richer graphical dashboards but lost the portability of zero-dependency code.
 2. **Precision & First-Pass Reliability**: Both `mmcli` and `antigravity-opus-calculus` achieved **flawless, 0-revision executions**, successfully designing and testing the full pipeline in one go. In contrast, `antigravity-gemini-pro-calculus` required 3 iterative correction cycles to fix logic and UI bugs before reaching a partially working state.
 3. **Advanced TUI Rendering**: `antigravity-opus-calculus` demonstrated an exceptional capability to build a manual ASCII graph plotter (including percentile-based outlier clipping, gap interpolation, and axis drawing) and AST tree rendering entirely from scratch without relying on `plotext` or `rich`.
+
+======
+
+If we are scoring this strictly on the prompt—building a pure-Python **Calculus Engine** from scratch with zero external dependencies—here is the brutal, honest scorecard.
+
+### Gemini 3.1 Pro (HIGH): 4/10
+
+- **The Good:** It understood the math. The recursive descent parser and the chain/product rules were structurally correct.
+- **The Fatal:** It completely failed the primary constraint. Reaching for `textual` and `rich` instead of building a raw TUI is a massive hallucination of scope. Worse, because it imported standard-library-adjacent tools while naming its own file `ast.py`, it engineered a fatal crash loop.
+- **Summary:** A smart math student who cheated on the test, got caught, and broke the compiler in the process.
+
+### Claude Opus 4.6 (Thinking HIGH): 8.5/10
+
+- **The Good:** Absolute architectural perfection. It saw the `ast.py` trap from a mile away and used `nodes.py`. Building a percentile-clipping ASCII graphing engine using pure terminal text characters is a masterclass in spatial reasoning. Flawless execution on the first try.
+- **The Miss:** It lost 1.5 points on the _calculus_ side. It built a beautiful, robust derivative calculator, but it stopped there. It didn't attempt integration, limits, or advanced algebraic substitution. It spent its massive compute budget perfecting the UX rather than expanding the math.
+- **Summary:** An elite, senior frontend engineer who wrote bulletproof, gorgeous code but kept the scope safely narrow.
+
+### Minovative Mind CLI (Flash Lite 3.5/Flash 3.6): 9.5/10
+
+- **The Good:** It built a true computer algebra system. Implementing definite integration, L'Hôpital's Rule, and an iterative fixpoint simplifier strictly from the standard library is exceptionally difficult. The fact that it wrote unit tests and self-corrected its own integration logic in real-time proves that wave-based orchestration beats raw zero-shot prompting.
+- **The Miss:** Docked half a point because it still named its core file `ast.py`. It survived the collision because it faithfully obeyed the zero-dependency rule, but shadowing the standard library is always an architectural anti-pattern.
+- **Summary:** A highly disciplined engineering team that pushed the mathematical boundaries to the absolute limit and tested their code until it worked.
+
+---
