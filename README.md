@@ -14,14 +14,15 @@ By comparing projects built by **`mmcli`** directly side-by-side with projects g
 
 ## 📂 Project Structure
 
-```
+```text
 python-practice/
 ├── all-projects/
 │   └── calculus/
-│       ├── mmcli-agent-calculus/        # Built by Minovative Mind CLI (mmcli)
-│       └── antigravity-ide-calculus/    # Built by Antigravity IDE (Gemini 3.1 Pro)
-├── main.py                              # Unified execution entry point
-├── requirements.txt                     # Global dependencies
+│       ├── mmcli-agent-calculus/            # Built by Minovative Mind CLI (mmcli)
+│       ├── antigravity-gemini-pro-calculus/ # Built by Antigravity IDE (Gemini 3.1 Pro)
+│       └── antigravity-opus-calculus/       # Built by Antigravity IDE (Opus 4.6)
+├── main.py                                  # Unified execution entry point
+├── requirements.txt                         # Global dependencies
 └── README.md
 ```
 
@@ -29,28 +30,29 @@ python-practice/
 
 ## ⚖️ Featured Showcase: Symbolic Calculus & TUI Engines
 
-Our primary benchmark showcase features two independent implementations of a **Symbolic Calculus Engine & Interactive Terminal User Interface (TUI)**:
+Our primary benchmark showcase features three independent implementations of a **Symbolic Calculus Engine & Interactive Terminal User Interface (TUI)**:
 
 1. **`mmcli-agent-calculus`**: Designed, structured, and implemented end-to-end by **`mmcli`**.
-2. **`antigravity-ide-calculus`**: Implemented by **Antigravity IDE** using frontier models (Gemini 3.1 Pro / Opus 4.6).
+2. **`antigravity-gemini-pro-calculus`**: Implemented by **Antigravity IDE** using Gemini 3.1 Pro.
+3. **`antigravity-opus-calculus`**: Implemented by **Antigravity IDE** using Opus 4.6.
 
 ### Detailed Architectural & Feature Comparison
 
-| Evaluation Metric                 | `mmcli-agent-calculus` (`mmcli` Agent, which used (gemini-3.5-flash-lite 17%, gemini-3.6-flash 83%))                    | `antigravity-ide-calculus` (Antigravity IDE / Gemini 3.1 Pro)      |
-| :-------------------------------- | :---------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------- |
-| **Agentic Framework**             | Minovative Mind CLI (`mmcli`) Agentic Engine                                                                            | Antigravity IDE Agent (Gemini 3.1 Pro / Opus 4.6)                  |
-| **First-Try Success & Revisions** | **0 Revisions** (Clean build on first attempt)                                                                          | Multiple iterative correction cycles required                      |
-| **Architecture & Pipeline**       | Pure pipeline-oriented compiler architecture (`Tokenizer` ➔ `Parser` ➔ `AST` ➔ `Subsystems`)                            | Modular widget-based DOM architecture                              |
-| **Interface & TUI**               | Curses-based TUI with text fallback & full CLI subcommands                                                              | Textual multi-pane layout with live DOM event handling             |
-| **Plotting / Visualization**      | ASCII Abstract Syntax Tree (AST) tree rendering & step logs                                                             | Interactive Plotext ANSI-colored function graphing                 |
-| **Calculus Subsystems**           | Full Symbolic Diff, Indefinite/Definite Integration, Limits (L'Hôpital / factor cancellation), Simplify, Eval, AST Tree | Real-time expression parsing, derivation steps, and graph plotting |
-| **External Dependencies**         | **Zero Runtime Dependencies** (Pure Python Standard Library)                                                            | Requires 3rd-party packages (`textual`, `plotext`)                 |
-| **Module Safety**                 | Strict namespace isolation (prevents stdlib `ast` shadowing)                                                            | Standard module naming                                             |
+| Evaluation Metric | `mmcli-agent-calculus` (`mmcli` Agent) | `antigravity-gemini-pro-calculus` (Antigravity IDE / Gemini 3.1 Pro) | `antigravity-opus-calculus` (Antigravity IDE / Opus) |
+| :--- | :--- | :--- | :--- |
+| **Agentic Framework** | Minovative Mind CLI (`mmcli`) Agentic Engine (Flash mix) | Antigravity IDE Agent (Gemini 3.1 Pro) | Antigravity IDE Agent (Opus 4.6) |
+| **First-Try Success** | **0 Revisions** (Clean build on first attempt) | **3 Revisions** (Iterative corrections required) | **0 Revisions** (Flawless first-pass execution) |
+| **Architecture** | Pure pipeline-oriented compiler architecture (`Tokenizer` ➔ `Parser` ➔ `AST` ➔ `Subsystems`) | Modular widget-based DOM architecture with rich UI bindings | Pure pipeline-oriented compiler architecture (`Tokenizer` ➔ `Parser` ➔ `AST` ➔ `TUI`) |
+| **Interface & TUI** | Curses-based TUI with text fallback & full CLI subcommands | Textual multi-pane layout with live DOM event handling | Custom Curses-based TUI with safe boundary fallbacks |
+| **Visualization** | ASCII Abstract Syntax Tree (AST) rendering & step logs | Interactive Plotext ANSI-colored function graphing & Rich AST tree | Hand-drawn ASCII Function Plotting, Step-by-Step Derivations, and custom AST Trees |
+| **Calculus Subsystems** | Full Symbolic Diff, Indefinite/Definite Integration, Limits, Simplify, Eval, AST Tree | Real-time expression parsing, derivation steps, and graph plotting | Symbolic Diff (Product, Quotient, Chain rules), Deep Simplification, Eval, AST Tree |
+| **Dependencies** | **Zero Runtime Dependencies** (Pure Python Standard Library) | Requires 3rd-party packages (`textual`, `plotext`) | **Zero Runtime Dependencies** (Pure Python Standard Library) |
+| **Module Safety** | Strict namespace isolation | Standard module naming | Standard module naming with `try/except` relative imports |
 
 ---
 
 ## 📈 Key Takeaways from Agentic Benchmarking
 
-1. **Zero-Dependency Robustness**: The `mmcli` agent successfully engineered a complete symbolic calculus and step-by-step reasoning engine using **pure Python standard library modules only**, eliminating supply-chain overhead.
-2. **Precision & First-Pass Reliability**: Built with `mmcli`'s rigorous context and syntax verification guardrails, `mmcli-agent-calculus` compiled and passed all test suites on the first attempt without manual debugging or revision cycles.
-3. **UI vs. Core Engine Trade-offs**: While Antigravity IDE leveraged heavy 3rd-party visualization libraries (`textual`, `plotext`) for rich graphical dashboards, `mmcli` delivered a highly portable, zero-dependency Curses/CLI engine that operates reliably in any minimal POSIX terminal environment.
+1. **Zero-Dependency Robustness vs. UI Frameworks**: Both `mmcli` and `antigravity-opus-calculus` successfully engineered complete symbolic calculus engines using **pure Python standard library modules only** (Curses). `antigravity-gemini-pro-calculus` leveraged heavy 3rd-party libraries (`textual`, `plotext`) for richer graphical dashboards but lost the portability of zero-dependency code.
+2. **Precision & First-Pass Reliability**: Both `mmcli` and `antigravity-opus-calculus` achieved **flawless, 0-revision executions**, successfully designing and testing the full pipeline in one go. In contrast, `antigravity-gemini-pro-calculus` required 3 iterative correction cycles to fix logic and UI bugs before reaching a partially working state.
+3. **Advanced TUI Rendering**: `antigravity-opus-calculus` demonstrated an exceptional capability to build a manual ASCII graph plotter (including percentile-based outlier clipping, gap interpolation, and axis drawing) and AST tree rendering entirely from scratch without relying on `plotext` or `rich`.
