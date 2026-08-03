@@ -16,10 +16,22 @@ Run direct CLI commands:
 import sys
 from pathlib import Path
 
-# Dynamically append 'all-projects' directory to sys.path to resolve internal packages
-ALL_PROJECTS_DIR = Path(__file__).resolve().parent / "all-projects"
-if str(ALL_PROJECTS_DIR) not in sys.path:
-    sys.path.insert(0, str(ALL_PROJECTS_DIR))
+# Dynamically resolve 'calculus' package without inserting CALCULUS_DIR into sys.path (which would shadow stdlib 'ast')
+CALCULUS_DIR = Path(__file__).resolve().parent / "all-projects" / "calculus" / "mmcli-agent-calculus"
+
+if str(CALCULUS_DIR) in sys.path:
+    sys.path.remove(str(CALCULUS_DIR))
+
+if "calculus" not in sys.modules:
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "calculus",
+        CALCULUS_DIR / "__init__.py",
+        submodule_search_locations=[str(CALCULUS_DIR)]
+    )
+    calculus_mod = importlib.util.module_from_spec(spec)
+    sys.modules["calculus"] = calculus_mod
+    spec.loader.exec_module(calculus_mod)
 
 from calculus.cli import main as cli_main
 

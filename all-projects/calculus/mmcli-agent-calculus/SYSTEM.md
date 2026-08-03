@@ -1,3 +1,13 @@
+# System Architecture
+
+> Minovative Mind CLI agent, using (gemini-3.5-flash-lite 17%, gemini-3.6-flash 83%), Revised it's code (0) times after my first try using this Calculus Engine TUI
+
+> Verdict: Works 100% after the first try
+
+---
+
+# Agent documentation it wrote below:
+
 # Symbolic Calculus Engine — System Architecture & Mechanics
 
 This document provides a comprehensive technical overview of the architecture, algorithms, and data structures powering the **Symbolic Calculus Engine**. The library is designed as a modular, pure-Python symbolic computation system that handles expression parsing, AST transformation, algebraic simplification, differentiation, integration, limits, multi-format rendering, and step-by-step reasoning.

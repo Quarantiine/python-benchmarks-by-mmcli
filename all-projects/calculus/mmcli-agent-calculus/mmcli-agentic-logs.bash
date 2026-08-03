@@ -515,6 +515,15 @@ Please let me know if you would like any further adjustments or additional featu
 ◇  📊 Session Statistics & Status
 ----------------------------------------
 AI Model:         Auto (gemini-3.5-flash-lite 17%, gemini-3.6-flash 83%)
-Sub-Agents:       Enabled
-Session Total:    5,503,326 tokens
-----------------------------------------
+
+●  Generated in 47.8s
+│
+●  Model: gemini-3.5-flash-lite
+│
+●  Session Token Usage: 6,822,816 total tokens (Input: 6,740,880, Output: 81,936)
+│
+●  Session Credits Used: 29,772
+│
+●  Last Active Branch: main
+│
+●  Sub-Agents: Enabled | Auto-Approve: Disabled
