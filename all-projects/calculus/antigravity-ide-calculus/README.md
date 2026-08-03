@@ -5,10 +5,12 @@ An interactive terminal application built in Python for parsing, visualizing, di
 ## Prerequisites
 
 Ensure you have installed the required dependencies from the project root:
+
 ```bash
 pip install -r requirements.txt
 ```
-*(Specifically requires `textual` and `plotext`)*
+
+_(Specifically requires `textual` and `plotext`)_
 
 ## How to Run
 
@@ -20,6 +22,7 @@ python3 all-projects/calculus/antigravity-ide-calculus/__main__.py
 ```
 
 Or navigate to the subproject directory directly:
+
 ```bash
 cd all-projects/calculus/antigravity-ide-calculus
 python3 __main__.py
@@ -45,6 +48,7 @@ python3 __main__.py
 5. **Graph Pane**: Displays an ASCII plot of your original expression ranging from `x = -10` to `x = 10`.
 
 **Examples to try**:
+
 - `x^2 * sin(x)`
 - `cos(x) / (x + 1)`
 - `(x - 5)^3`

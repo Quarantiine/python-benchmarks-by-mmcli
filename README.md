@@ -36,7 +36,7 @@ Our primary benchmark showcase features two independent implementations of a **S
 
 ### Detailed Architectural & Feature Comparison
 
-| Evaluation Metric                 | `mmcli-agent-calculus` (`mmcli` Agent)                                                                                  | `antigravity-ide-calculus` (Antigravity IDE / Gemini 3.1 Pro)      |
+| Evaluation Metric                 | `mmcli-agent-calculus` (`mmcli` Agent, which used (gemini-3.5-flash-lite 17%, gemini-3.6-flash 83%))                    | `antigravity-ide-calculus` (Antigravity IDE / Gemini 3.1 Pro)      |
 | :-------------------------------- | :---------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------- |
 | **Agentic Framework**             | Minovative Mind CLI (`mmcli`) Agentic Engine                                                                            | Antigravity IDE Agent (Gemini 3.1 Pro / Opus 4.6)                  |
 | **First-Try Success & Revisions** | **0 Revisions** (Clean build on first attempt)                                                                          | Multiple iterative correction cycles required                      |
@@ -46,51 +46,6 @@ Our primary benchmark showcase features two independent implementations of a **S
 | **Calculus Subsystems**           | Full Symbolic Diff, Indefinite/Definite Integration, Limits (L'Hôpital / factor cancellation), Simplify, Eval, AST Tree | Real-time expression parsing, derivation steps, and graph plotting |
 | **External Dependencies**         | **Zero Runtime Dependencies** (Pure Python Standard Library)                                                            | Requires 3rd-party packages (`textual`, `plotext`)                 |
 | **Module Safety**                 | Strict namespace isolation (prevents stdlib `ast` shadowing)                                                            | Standard module naming                                             |
-
----
-
-## 🛠️ Getting Started & Execution
-
-### Running the `mmcli` Calculus TUI
-
-Launch the interactive terminal user interface directly from the repository root:
-
-```bash
-python3 main.py
-```
-
-### Running Direct CLI Subcommands (`mmcli-agent-calculus`)
-
-The `mmcli` implementation supports rich command-line operations out-of-the-box:
-
-```bash
-# Symbolic Differentiation
-python3 main.py diff "x^3 + sin(x)" -v x
-
-# Indefinite / Definite Integration
-python3 main.py int "x^2" -l 0 -u 2
-
-# Limit Evaluation (with L'Hôpital's Rule & cancellation)
-python3 main.py lim "sin(x)/x" -p 0
-
-# Algebraic Simplification
-python3 main.py simplify "x + x + 0"
-
-# Numerical Evaluation
-python3 main.py eval "x^2 + y" x=3 y=4
-
-# ASCII AST Tree Generation
-python3 main.py tree "sin(2*x)"
-```
-
-### Running the Antigravity IDE Calculus TUI
-
-To execute the competing Antigravity IDE implementation (requires `textual` and `plotext`):
-
-```bash
-pip install -r all-projects/calculus/antigravity-ide-calculus/requirements.txt
-python3 all-projects/calculus/antigravity-ide-calculus/__main__.py
-```
 
 ---
 
