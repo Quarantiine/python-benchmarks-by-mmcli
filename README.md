@@ -38,16 +38,16 @@ Our primary benchmark showcase features three independent implementations of a *
 
 ### Detailed Architectural & Feature Comparison
 
-| Evaluation Metric | `mmcli-agent-calculus` (`mmcli` Agent) | `antigravity-gemini-pro-calculus` (Antigravity IDE / Gemini 3.1 Pro) | `antigravity-opus-calculus` (Antigravity IDE / Opus) |
-| :--- | :--- | :--- | :--- |
-| **Agentic Framework** | Minovative Mind CLI (`mmcli`) Agentic Engine (Flash mix) | Antigravity IDE Agent (Gemini 3.1 Pro) | Antigravity IDE Agent (Opus 4.6) |
-| **First-Try Success** | **0 Revisions** (Clean build on first attempt) | **3 Revisions** (Iterative corrections required) | **0 Revisions** (Flawless first-pass execution) |
-| **Architecture** | Pure pipeline-oriented compiler architecture (`Tokenizer` ➔ `Parser` ➔ `AST` ➔ `Subsystems`) | Modular widget-based DOM architecture with rich UI bindings | Pure pipeline-oriented compiler architecture (`Tokenizer` ➔ `Parser` ➔ `AST` ➔ `TUI`) |
-| **Interface & TUI** | Curses-based TUI with text fallback & full CLI subcommands | Textual multi-pane layout with live DOM event handling | Custom Curses-based TUI with safe boundary fallbacks |
-| **Visualization** | ASCII Abstract Syntax Tree (AST) rendering & step logs | Interactive Plotext ANSI-colored function graphing & Rich AST tree | Hand-drawn ASCII Function Plotting, Step-by-Step Derivations, and custom AST Trees |
-| **Calculus Subsystems** | Full Symbolic Diff, Indefinite/Definite Integration, Limits, Simplify, Eval, AST Tree | Real-time expression parsing, derivation steps, and graph plotting | Symbolic Diff (Product, Quotient, Chain rules), Deep Simplification, Eval, AST Tree |
-| **Dependencies** | **Zero Runtime Dependencies** (Pure Python Standard Library) | Requires 3rd-party packages (`textual`, `plotext`) | **Zero Runtime Dependencies** (Pure Python Standard Library) |
-| **Module Safety** | Strict namespace isolation | Standard module naming | Standard module naming with `try/except` relative imports |
+| Evaluation Metric       | `mmcli-agent-calculus` (gemini-3.5-flash-lite 17%, gemini-3.6-flash 83%)                     | `antigravity-gemini-pro-calculus` (Antigravity IDE / Gemini 3.1 Pro) | `antigravity-opus-calculus` (Antigravity IDE / Opus)                                  |
+| :---------------------- | :------------------------------------------------------------------------------------------- | :------------------------------------------------------------------- | :------------------------------------------------------------------------------------ |
+| **Agentic Framework**   | Minovative Mind CLI (`mmcli`) Agentic Engine (Flash mix)                                     | Antigravity IDE Agent (Gemini 3.1 Pro)                               | Antigravity IDE Agent (Opus 4.6)                                                      |
+| **First-Try Success**   | **0 Revisions** (Clean build on first attempt)                                               | **3 Revisions** (Iterative corrections required)                     | **0 Revisions** (Flawless first-pass execution)                                       |
+| **Architecture**        | Pure pipeline-oriented compiler architecture (`Tokenizer` ➔ `Parser` ➔ `AST` ➔ `Subsystems`) | Modular widget-based DOM architecture with rich UI bindings          | Pure pipeline-oriented compiler architecture (`Tokenizer` ➔ `Parser` ➔ `AST` ➔ `TUI`) |
+| **Interface & TUI**     | Curses-based TUI with text fallback & full CLI subcommands                                   | Textual multi-pane layout with live DOM event handling               | Custom Curses-based TUI with safe boundary fallbacks                                  |
+| **Visualization**       | ASCII Abstract Syntax Tree (AST) rendering & step logs                                       | Interactive Plotext ANSI-colored function graphing & Rich AST tree   | Hand-drawn ASCII Function Plotting, Step-by-Step Derivations, and custom AST Trees    |
+| **Calculus Subsystems** | Full Symbolic Diff, Indefinite/Definite Integration, Limits, Simplify, Eval, AST Tree        | Real-time expression parsing, derivation steps, and graph plotting   | Symbolic Diff (Product, Quotient, Chain rules), Deep Simplification, Eval, AST Tree   |
+| **Dependencies**        | **Zero Runtime Dependencies** (Pure Python Standard Library)                                 | Requires 3rd-party packages (`textual`, `plotext`)                   | **Zero Runtime Dependencies** (Pure Python Standard Library)                          |
+| **Module Safety**       | Strict namespace isolation                                                                   | Standard module naming                                               | Standard module naming with `try/except` relative imports                             |
 
 ---
 
