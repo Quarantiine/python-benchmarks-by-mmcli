@@ -55,17 +55,18 @@ To run the subproject directly without going through root `main.py`:
 
 ```bash
 # From workspace root
-python3 all-projects/calculus/mmcli-agent-calculus/__main__.py diff "x^3 + sin(x)"
+python3 all-projects/calculus/mmcli-agent-calculus/__main__.py
 
 # Or navigate into the subproject directory directly
 cd all-projects/calculus/mmcli-agent-calculus
-python3 __main__.py diff "x^3 + sin(x)"
+python3 __main__.py
 ```
 
 > **Important Note on `PYTHONPATH` and Module Execution:**
 > Running `PYTHONPATH=all-projects/calculus/mmcli-agent-calculus python3 -m calculus` fails with `No module named calculus` because the subproject directory on disk is named `mmcli-agent-calculus`, not `calculus`. Additionally, placing `mmcli-agent-calculus` directly into `PYTHONPATH` or `sys.path[0]` causes its local `ast.py` module to shadow Python's standard library `ast` module.
-> 
+>
 > To run commands cleanly:
+>
 > - Use the top-level entry point `python3 main.py [subcommand]` or `PYTHONPATH=. python3 main.py [subcommand]`.
 > - Use `python3 all-projects/calculus/mmcli-agent-calculus/__main__.py [subcommand]`.
 > - Run test suites using `pytest` from the root directory (`tests/conftest.py` configures `calculus` module loading dynamically without shadowing standard library modules).
