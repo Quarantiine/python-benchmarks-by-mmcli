@@ -26,9 +26,32 @@ python-practice/
 │       ├── antigravity-gemini-pro-calculus/ # Built by Antigravity IDE (Gemini 3.1 Pro)
 │       ├── antigravity-opus-calculus/       # Built by Antigravity IDE (Opus 4.6)
 │       └── antigravity-flash-calculus/      # Built by Antigravity IDE (Gemini 3.6 Flash)
-├── main.py                                  # Unified execution entry point & dynamic importlib loader
+├── main.py                                  # Unified execution entry point & dynamic multi-engine project loader
 ├── requirements.txt                         # Global dependencies
 └── README.md
+```
+
+### 🔀 Running & Switching Between Engine Implementations
+
+You can switch between any of the calculus builds under `all-projects/calculus/` directly from `main.py`:
+
+```bash
+# 1. Interactively select/switch engine:
+python3 main.py --select
+
+# 2. Run a specific engine by name or alias:
+python3 main.py -p flash                  # Minovative Mind CLI (Gemini 3.6 Flash CAS)
+python3 main.py -p lite                   # Minovative Mind CLI (Flash Lite)
+python3 main.py -p opus                   # Antigravity IDE (Claude Opus 4.6 TUI)
+python3 main.py -p ag-flash               # Antigravity IDE (Gemini 3.6 Flash TUI)
+python3 main.py -p pro                    # Antigravity IDE (Gemini 3.1 Pro Textual TUI)
+
+# 3. Pass subcommands directly to selected engine:
+python3 main.py -p flash diff "x^3 + sin(x)" -v x
+python3 main.py -p lite int "x^2" -l 0 -u 2
+
+# 4. List all available engines and shortcuts:
+python3 main.py --list-projects
 ```
 
 ---
