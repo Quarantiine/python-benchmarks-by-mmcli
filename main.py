@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 
 # Dynamically resolve 'calculus' package without inserting CALCULUS_DIR into sys.path (which would shadow stdlib 'ast')
-CALCULUS_DIR = Path(__file__).resolve().parent / "all-projects" / "calculus" / "mmcli-agent-calculus"
+CALCULUS_DIR = Path(__file__).resolve().parent / "all-projects" / "calculus" / "mmcli-flash-calculus" / "mmcli-flash-lite-calculus"
 
 if str(CALCULUS_DIR) in sys.path:
     sys.path.remove(str(CALCULUS_DIR))
