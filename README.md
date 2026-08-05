@@ -124,7 +124,7 @@ antigravity-gemini-pro (Gemini 3.1 Pro)   | 11/32 (34.4%) |  11/28 (39.3%) |    
 | **Cat 4: Product/Quotient (4 eq)**         | $\frac{x^2+1}{x^3-1}$, $\frac{\sin x}{\cos x + 1}$, $x^2 \sin x \ln x$, $\frac{e^x \sin x}{x^2+1}$                | 🟢 4/4        | 🟢 4/4             | 🟢 4/4              | 🟢 4/4             | 🔴 0/4                   |
 | **Cat 5: Nested Chain Rule (4 eq)**        | $\sin(\cos(\tan x))$, $\sqrt{1+\sin^2 x}$, $e^{\sqrt{x^2+4}}$, $\ln(\sin(x^3+1))$                                 | 🟢 4/4        | 🟢 4/4             | 🟢 4/4              | 🔴 2/4             | 🔴 0/4                   |
 | **Cat 6: Radicals (4 eq)**                 | $\sqrt{x^3+2x}$, $\frac{1}{\sqrt{4-x^2}}$, $(x^3+1)^{2/3}$, $\sqrt{x} \ln(\sqrt{x})$                              | 🟢 4/4        | 🟢 4/4             | 🟢 4/4              | 🔴 1/4             | 🔴 0/4                   |
-| **Cat 7: CAS Integration & Limits (4 eq)** | $\int (x^4-2x+1) dx$, $\int_0^3 x^2 dx$, $\lim_{x \to 0} \frac{\sin x}{x}$, $\lim_{x \to 0} \frac{1-\cos x}{x^2}$ | 🟢 4/4        | 🟢 3/4             | 🔴 0/4              | 🔴 0/4             | 🔴 0/4                   |
+| **Cat 7: CAS Integration & Limits (4 eq)** | $\int (x^4-2x+1) dx$, $\int_0^3 x^2 dx$, $\lim_{x \to 0} \frac{\sin x}{x}$, $\lim_{x \to 0} \frac{1-\cos x}{x^2}$ | 🟢 4/4        | 🔴 3/4             | 🔴 0/4              | 🔴 0/4             | 🔴 0/4                   |
 | **Cat 8: Boundary & Errors (4 eq)**        | $x^2+\sin x$ (Unicode), bare `cos3x`, syntax `sin(x`, syntax `x=2`                                                | 🔴 3/4        | 🔴 2/4             | 🔴 3/4              | 🔴 2/4             | 🟢 4/4                   |
 
 ---
