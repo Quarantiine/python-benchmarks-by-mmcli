@@ -170,7 +170,11 @@ antigravity-gemini-pro (Gemini 3.1 Pro)   | 11/32 (34.4%) |  11/28 (39.3%) |    
 
 ## 📈 Key Takeaways
 
-1. **3-Way Tie on Pure Differentiation (92.9% Diff-only)** — On the 28 pure differentiation cases (Categories 1-6 + 8), `mmcli-flash`, `mmcli-flash-lite`, and `antigravity-flash` tie at **26/28 (92.9%)**. `mmcli-flash`'s overall lead (93.8% vs 81.2%) stems strictly from implementing Category 7 (Symbolic Integration & Limits), not a quality gap in differentiation.
+1. **3-Way Tie on Pure Differentiation (92.9% Diff-only) & Qualitative Tiebreaker**:
+   - On the 28 pure differentiation cases (Categories 1-6 + 8), `mmcli-flash`, `mmcli-flash-lite`, and `antigravity-flash` tie at **26/28 (92.9%)**. However, inspecting *which* 2 cases each engine missed reveals a clear qualitative distinction:
+     - **`mmcli-flash` & `antigravity-flash`** missed **Case 7** (`asin(x)+acos(x)` due to no inverse trig nodes) and **Case 30** (`cos3x`). Crucially, both **passed Case 29** by safely rejecting non-ASCII input (`x²`) with an explicit `ValueError`.
+     - **`mmcli-flash-lite`** was the **only engine** in the entire benchmark to pass **Case 7** (`asin(x)+acos(x)` with full `asin`/`acos`/`atan` node support). However, it missed **Case 29** by silently returning `cos(x)` (treating `x²` as an opaque token with derivative 0), alongside **Case 30** (`cos3x`).
+   - **Tiebreaker Verdict:** `mmcli-flash-lite` wins on **Mathematical Function Scope** (10 functions including inverse trig), while `mmcli-flash` and `antigravity-flash` win on **Input Safety & Error Handling** (explicit `ValueError` rejection of non-ASCII input).
 2. **`mmcli-flash-lite` Unicode Silent Failure Confirmed** — On Case 29 (`x² + sin(x)`), `mmcli-flash-lite` returned `cos(x)` (silently dropping `x²` as an opaque token with derivative 0), matching the exact silent failure mode of Opus and Gemini Pro.
 3. **Opus Operator Precedence Bug Discovered** — In Case 12 (`exp(-x²)·cos(x)`), Claude Opus 4.6 parsed `-x^2` as `(-x)^2` = `x^2`, differentiating a different function without raising an error. This is a distinct operator precedence flaw independent of its `sqrt` function gap.
 4. **Opus `sqrt` Gap Confirmed at Scale** — All 5 `sqrt`-containing cases (Cases 18, 19, 21, 22, 24) failed in Opus because its parser lacks `sqrt` node support, outputting unparseable variable multiplications like `(sqrt * (...))`.
