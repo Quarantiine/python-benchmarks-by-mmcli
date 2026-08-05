@@ -96,26 +96,6 @@ Five independent implementations of a **Symbolic Calculus Engine & Interactive T
 
 ---
 
-## 🧪 Live Verification Round (this session)
-
-Five tests were run identically across the builds still in contention, using the shared expression:
-
-$$\frac{\sin(x^2 \cos(3x))}{(x^3 + 2x)^2}$$
-
-| Test                                                | mmcli-flash                                                                                              | mmcli-flash-lite                                                       | Opus 4.6                                                                                            | Gemini 3.6 Flash                                                                           | Gemini 3.1 Pro                                     |
-| :-------------------------------------------------- | :------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------- | :------------------------------------------------- |
-| **Unicode input** (`x²`, `x³`, `·` pasted directly) | Rejected outright, required ASCII reformat                                                               | Parsed `x²` as single variable token `x²` (derivative w.r.t `x` is 0)  | Silently dropped the exponents/dot and differentiated a different, simpler function with no warning | Explicitly rejected with clean error (`ValueError: Unexpected character in expression: ²`) | Rejected — never got a valid parse in this session |
-| **Correct ASCII syntax** (`x^2`, `cos(3*x)`, `^2`)  | Correct — matched hand-derived answer                                                                    | Correct — matched `mmcli-flash` derivative structure                   | Correct — matched mmcli exactly                                                                     | Correct — matched mmcli and Opus exactly                                                   | Still failed to parse                              |
-| **Bare function name, no parens** (`cos3x`)         | Bug confirmed: parsed as opaque symbol, dropped the entire chain-rule term for `cos(3x)`, no error shown | Identical behavior (parsed as opaque variable `cos3x`, derivative = 0) | Identical bug to mmcli                                                                              | Identical bug to mmcli & Opus (parsed as opaque variable `cos3x`, derivative = 0)          | N/A — disqualified before this round               |
-| **Direct substitution syntax** (`x = 0`)            | Correctly threw a syntax error (expression grammar doesn't accept `=`)                                   | Correctly threw a syntax error — same, appropriate behavior            | Correctly threw a syntax error — same, appropriate behavior                                         | Not tested                                                                                 | N/A                                                |
-| **Indefinite Integral** (`∫ x² dx`)                 | Correct (`x³ / 3 + C`)                                                                                   | Antiderivative estimator preview                                       | N/A (not implemented)                                                                               | N/A (not implemented)                                                                      | N/A                                                |
-| **Definite Integral** (`∫_0^2 x² dx`)               | Correct (`2.6666666666666665`)                                                                           | Correct numerical Simpson's rule integration (`2.666667`)              | N/A (not implemented)                                                                               | N/A (not implemented)                                                                      | N/A                                                |
-| **L'Hôpital Limit** (`lim_{x->0} sin(x)/x`)         | Correct (`1.0`)                                                                                          | Correct numerical limit estimation (`1.000000`)                        | N/A (not implemented)                                                                               | N/A (not implemented)                                                                      | N/A                                                |
-| **Benchmark Singularity Limit at x=0**              | Correct (`0.25` via L'Hôpital's Rule on $\frac{\sin(x^2 \cos(3x))}{(x^3 + 2x)^2}$)                       | Correct limit estimation (`0.250000`)                                  | N/A (not implemented)                                                                               | N/A (not implemented)                                                                      | N/A                                                |
-
-**Net result:** `mmcli-flash` and `mmcli-flash-lite` are the only builds that implemented and verified full calculus capabilities beyond differentiation—including integration approximations and indeterminate limit solvers.
----
-
 ### 🧪 32-Equation Oracle-Verified Benchmark Suite
 
 A comprehensive 32-equation benchmark was executed across all 5 calculus engines using an independent SymPy ground-truth oracle runner (`all-projects/calculus/calculus_engine_benchmark_runner.py`). Every derivative, integral, limit, and boundary condition was graded with a single, uniform rubric across 8 mathematical categories:
@@ -205,12 +185,10 @@ antigravity-gemini-pro (Gemini 3.1 Pro)   | 11/32 (34.4%) |  11/28 (39.3%) |    
 
 - **The Good:** Comprehensive multi-pane TUI architecture plan on paper.
 
-- **The Miss:** Failed **21/32 equations (34.4%)**, throwing `ParseError` on basic trigonometric and nested function syntax. Violated zero-dependency rule by requiring `textual` and `plotext`.
+- **The Miss:** Failed **21/32 equations (34.4%)**, throwing `ParseError` on basic trigonometric and nested function syntax. 
 
-- **Verdict:** **Disqualified.** Failed fundamental syntax parsing on multi-subsystem calculus expressions.
+- **The Fatal:** Violated the zero-dependency constraint by requiring `textual` and `plotext`, suffered module shadowing (`ast.py` colliding with Python's standard `ast`), relative import bugs, and zero automated tests.
 
-- **The Fatal:** Failed the zero-dependency constraint by installing `textual` and `plotext`, suffered module shadowing (`ast.py` colliding with Python's standard `ast`), relative import bugs, and zero automated tests.
-
-- **Verdict:** **Disqualified.** Failed core architectural constraints and required manual code fixes to run.
+- **Verdict:** **Disqualified.** Failed core architectural constraints, dependency limits, and basic syntax parsing across the 32-equation suite.
 
 ---
