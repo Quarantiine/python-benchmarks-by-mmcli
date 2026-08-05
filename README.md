@@ -114,25 +114,6 @@ $$\frac{\sin(x^2 \cos(3x))}{(x^3 + 2x)^2}$$
 | **Benchmark Singularity Limit at x=0**              | Correct (`0.25` via L'Hôpital's Rule on $\frac{\sin(x^2 \cos(3x))}{(x^3 + 2x)^2}$)                       | Correct limit estimation (`0.250000`)                                  | N/A (not implemented)                                                                               | N/A (not implemented)                                                                      | N/A                                                |
 
 **Net result:** `mmcli-flash` and `mmcli-flash-lite` are the only builds that implemented and verified full calculus capabilities beyond differentiation—including integration approximations and indeterminate limit solvers.
-
-### 🧪 Complex Hard Equation Stress Test
-
-Two hard multi-subsystem expressions were evaluated across all 5 engines:
-
-1. **Equation 1 (Quotient + Product + Chain + Exponential + Trigonometric Rules):**
-   $$f(x) = \frac{e^{x^2 \sin(x)}}{x^3 + \cos^2(x)}$$
-
-2. **Equation 2 (Logarithmic + Trigonometric + Radical + Chain Rules):**
-   $$g(x) = \ln(x^2 + 1) \cdot \tan(x) - \sqrt{4 - x^2}$$
-
-| Engine                       | Equation 1 Result                                                                          | Equation 2 Result                                                                                                                                                |
-| :--------------------------- | :----------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`mmcli-flash`**            | 🟢 **PASS**: Exact derivative; simplified `+2*cos(x)*(-sin(x))` to `-2*cos(x)*sin(x)`     | 🟢 **PASS**: Exact derivative across `ln`, `tan`, and `sqrt`; simplified double negation to `+(2x) / (2*sqrt(4-x^2))`                                            |
-| **`antigravity-flash`**      | 🟢 **PASS**: Exact derivative; simplified `+2*cos(x)*(-sin(x))` to `-2*cos(x)*sin(x)`     | 🟢 **PASS**: Exact derivative across `ln`, `tan`, and `sqrt`; simplified double negation to `+(2x) / (2*sqrt(4-x^2))`                                            |
-| **`mmcli-flash-lite`**       | 🟢 **PASS**: Exact derivative and full AST parse; simplified constants & powers cleanly    | 🟢 **PASS**: Exact derivative across `log`, `tan`, and `sqrt`                                                                                                    |
-| **`antigravity-opus`**       | 🟢 **PASS**: Differentiated AST correctly                                                  | 🔴 **CRITICAL FAILURE**: Does not recognize `sqrt`; silently misparsed `sqrt(4-x^2)` as variable `sqrt * (4-x^2)`, yielding silent wrong derivative `sqrt*(-2x)` |
-| **`antigravity-gemini-pro`** | 🔴 **FAIL**: `ParseError: Unexpected token at end`                                         | 🔴 **FAIL**: `ParseError: Unexpected token at end`                                                                                                               |
-
 ---
 
 ### 🧪 32-Equation Oracle-Verified Benchmark Suite
