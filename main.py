@@ -257,6 +257,11 @@ def main():
         elif arg in ("--list-projects", "--projects", "-l"):
             print_projects_list()
             sys.exit(0)
+        elif arg in ("--benchmark", "-b", "--bench"):
+            import subprocess
+            runner_path = BASE_DIR / "all-projects" / "calculus" / "calculus_engine_benchmark_runner.py"
+            res = subprocess.run([sys.executable, str(runner_path)])
+            sys.exit(res.returncode)
         else:
             clean_args.append(arg)
             i += 1
