@@ -147,7 +147,7 @@ antigravity-gemini-pro (Gemini 3.1 Pro)   | 11/32 (34.4%) |  11/28 (39.3%) |    
 
 ## 🏆 Scorecard (updated with 32-equation benchmark data)
 
-### 🥇 Minovative Mind CLI (`mmcli-flash`): 9.2 / 10 — **BENCHMARK WINNER**
+### 🥇 Minovative Mind CLI (`using gemini flash 3.6`): 9.2 / 10 — **BENCHMARK WINNER**
 
 - **The Good:** Undisputed winner in features, CAS scope, and accuracy. Passed **30/32 equations (93.8%)** in the SymPy oracle benchmark. Live-tested and verified full CAS capabilities (indefinite/definite integration, L'Hôpital's Rule limit solver), zero runtime dependencies, LaTeX export, and 41/41 passing unit tests (`pytest`).
 - **Thinking Level Configuration:** Built with `thinkingLevels` un-set, utilizing built-in Google model default **`MEDIUM`** thinking level (out of `MINIMAL, LOW, MEDIUM, HIGH`).
@@ -156,7 +156,7 @@ antigravity-gemini-pro (Gemini 3.1 Pro)   | 11/32 (34.4%) |  11/28 (39.3%) |    
 
 - **Verdict:** **Superior overall engine.** Highest verified 32-equation accuracy and broadest CAS feature set.
 
-### 🥈 Minovative Mind CLI Flash-Lite (`mmcli-flash-lite-calculus`): 9.0 / 10 — **BEST LIGHTWEIGHT ENGINE**
+### 🥈 Minovative Mind CLI Flash-Lite (`using gemini flash lite 3.5`): 9.0 / 10 — **BEST LIGHTWEIGHT ENGINE**
 
 - **The Good:** 0-revision clean build with zero external dependencies. Passed **29/32 equations (90.6%)** overall and **26/28 (92.9%)** on differentiation. Fixed standard library import collisions by using `ast_nodes.py`. 16/16 passing unit tests (`pytest`). Features: symbolic differentiation, 15-pass algebraic simplification, numerical Simpson's rule definite integration, limit estimation, AST equation tree visualization (`tree`), step-by-step breakdown cards (`diff -s`), and interactive TUI. Default active engine in `main.py`.
 - **Thinking Level Configuration:** Built with `thinkingLevels` un-set, utilizing built-in Google model default **`MINIMAL`** thinking level (out of `MINIMAL, LOW, MEDIUM, HIGH`).
