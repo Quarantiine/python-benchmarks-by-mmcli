@@ -141,14 +141,14 @@ A comprehensive 32-equation benchmark was executed across all 5 calculus engines
 
 ```text
 ========================================================================================
-Summary Table: 32-Equation Benchmark Suite Results
+Summary Table: 32-Equation Benchmark Suite Results (Strict Oracle Grading)
 ========================================================================================
 Engine                                   | Full 32 Score | Diff-Only (28) | Unverifiable
 ----------------------------------------------------------------------------------------
-mmcli-flash (Gemini 3.6 Flash Full CAS)   | 30/32 (93.8%) |  26/28 (92.9%) |      1
+mmcli-flash (Gemini 3.6 Flash Full CAS)   | 30/32 (93.8%) |  26/28 (92.9%) |      0
 mmcli-flash-lite (Gemini 3.5 Flash-Lite)  | 29/32 (90.6%) |  26/28 (92.9%) |      0
-antigravity-flash (Gemini 3.6 Flash)     | 26/32 (81.2%) |  26/28 (92.9%) |      1
-antigravity-opus (Claude Opus 4.6)       | 19/32 (59.4%) |  19/28 (67.9%) |      6
+antigravity-flash (Gemini 3.6 Flash)     | 26/32 (81.2%) |  26/28 (92.9%) |      0
+antigravity-opus (Claude Opus 4.6)       | 19/32 (59.4%) |  19/28 (67.9%) |      0
 antigravity-gemini-pro (Gemini 3.1 Pro)   | 11/32 (34.4%) |  11/28 (39.3%) |      0
 ========================================================================================
 ```
@@ -158,23 +158,24 @@ antigravity-gemini-pro (Gemini 3.1 Pro)   | 11/32 (34.4%) |  11/28 (39.3%) |    
 | Category | Description | `mmcli-flash` | `mmcli-flash-lite` | `antigravity-flash` | `antigravity-opus` | `antigravity-gemini-pro` |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Cat 1: Polynomials (4 eq)** | $x^5$, $(2x+5)^4$, negative exponents, products | 🟢 4/4 | 🟢 4/4 | 🟢 4/4 | 🟢 4/4 | 🟢 4/4 |
-| **Cat 2: Trigonometric (4 eq)** | $\sin\cos$, $\tan(x^2+1)$, $\arcsin+\arccos$, $\tan^2+1$ | 🟡 3/4 | 🟢 4/4 | 🟡 3/4 | 🟡 3/4 | 🟡 2/4 |
+| **Cat 2: Trigonometric (4 eq)** | $\sin\cos$, $\tan(x^2+1)$, $\arcsin+\arccos$, $\tan^2+1$ | 🔴 3/4 | 🟢 4/4 | 🔴 3/4 | 🔴 3/4 | 🔴 2/4 |
 | **Cat 3: Exp & Log (4 eq)** | $e^{3x}(x^2-2x+2)$, $\frac{\ln(x^2+1)}{x}$, $x^3\ln x$, $e^{-x^2}\cos x$ | 🟢 4/4 | 🟢 4/4 | 🟢 4/4 | 🔴 3/4 | 🔴 0/4 |
 | **Cat 4: Product/Quotient (4 eq)** | $\frac{x^2+1}{x^3-1}$, $\frac{\sin x}{\cos x + 1}$, $x^2 \sin x \ln x$, $\frac{e^x \sin x}{x^2+1}$ | 🟢 4/4 | 🟢 4/4 | 🟢 4/4 | 🟢 4/4 | 🔴 0/4 |
 | **Cat 5: Nested Chain Rule (4 eq)** | $\sin(\cos(\tan x))$, $\sqrt{1+\sin^2 x}$, $e^{\sqrt{x^2+4}}$, $\ln(\sin(x^3+1))$ | 🟢 4/4 | 🟢 4/4 | 🟢 4/4 | 🔴 2/4 | 🔴 0/4 |
 | **Cat 6: Radicals (4 eq)** | $\sqrt{x^3+2x}$, $\frac{1}{\sqrt{4-x^2}}$, $(x^3+1)^{2/3}$, $\sqrt{x} \ln(\sqrt{x})$ | 🟢 4/4 | 🟢 4/4 | 🟢 4/4 | 🔴 1/4 | 🔴 0/4 |
 | **Cat 7: CAS Integration & Limits (4 eq)** | $\int (x^4-2x+1) dx$, $\int_0^3 x^2 dx$, $\lim_{x \to 0} \frac{\sin x}{x}$, $\lim_{x \to 0} \frac{1-\cos x}{x^2}$ | 🟢 4/4 | 🟢 3/4 | 🔴 0/4 | 🔴 0/4 | 🔴 0/4 |
-| **Cat 8: Boundary & Errors (4 eq)** | $x^2+\sin x$ (Unicode), bare `cos3x`, syntax `sin(x`, syntax `x=2` | 🟡 3/4 | 🟡 2/4 | 🟡 3/4 | 🟡 2/4 | 🟢 4/4 |
+| **Cat 8: Boundary & Errors (4 eq)** | $x^2+\sin x$ (Unicode), bare `cos3x`, syntax `sin(x`, syntax `x=2` | 🔴 3/4 | 🔴 2/4 | 🔴 3/4 | 🔴 2/4 | 🟢 4/4 |
 
 ---
 
 ## 📈 Key Takeaways
 
-1. **`mmcli-flash` Wins 32-Equation Benchmark (93.8%)** — Passed 30 out of 32 equations, scoring 100% on polynomials, exponentials/logarithms, product/quotient rules, nested chain rules, radicals, and all 4 CAS integration & limit equations.
-2. **`mmcli-flash-lite` Wins 100% Differentiation Accuracy (92.9% Diff-only, 90.6% Overall)** — Passed 29/32 overall and 26/28 on differentiation, cleanly handling inverse trig derivatives ($\arcsin, \arccos$) where other engines formatted strings differently.
-3. **Opus Silent Radical Misparse Exposed** — Claude Opus 4.6 failed 5 radical and chain rule equations (19/32 total, 59.4%) because its parser lacks `sqrt` node support, silently outputting invalid variable multiplications `sqrt * (...)`.
-4. **Gemini 3.1 Pro Parser Collapse** — Gemini 3.1 Pro failed 21 of 32 equations (34.4%) due to `ParseError: Unexpected token at end: ('OP', '(')` whenever function calls or nested parenthesis expressions were evaluated.
-5. **Input Error Validation** — Gemini 3.6 Flash (`antigravity-flash` and `mmcli-flash`) cleanly rejected invalid Unicode (`ValueError: Unexpected character: ²`), while Opus silently dropped superscripts and calculated wrong derivatives.
+1. **3-Way Tie on Pure Differentiation (92.9% Diff-only)** — On the 28 pure differentiation cases (Categories 1-6 + 8), `mmcli-flash`, `mmcli-flash-lite`, and `antigravity-flash` tie at **26/28 (92.9%)**. `mmcli-flash`'s overall lead (93.8% vs 81.2%) stems strictly from implementing Category 7 (Symbolic Integration & Limits), not a quality gap in differentiation.
+2. **`mmcli-flash-lite` Unicode Silent Failure Confirmed** — On Case 29 (`x² + sin(x)`), `mmcli-flash-lite` returned `cos(x)` (silently dropping `x²` as an opaque token with derivative 0), matching the exact silent failure mode of Opus and Gemini Pro.
+3. **Opus Operator Precedence Bug Discovered** — In Case 12 (`exp(-x²)·cos(x)`), Claude Opus 4.6 parsed `-x^2` as `(-x)^2` = `x^2`, differentiating a different function without raising an error. This is a distinct operator precedence flaw independent of its `sqrt` function gap.
+4. **Opus `sqrt` Gap Confirmed at Scale** — All 5 `sqrt`-containing cases (Cases 18, 19, 21, 22, 24) failed in Opus because its parser lacks `sqrt` node support, outputting unparseable variable multiplications like `(sqrt * (...))`.
+5. **Strict Rubric (0 Unverifiable)** — Corrupt or unparseable output strings (such as `'(asin + acos)'` in Case 7 for engines lacking inverse trig support) are strictly graded as **FAIL** rather than inconclusive.
+6. **Gemini 3.1 Pro API vs. TUI Behavior** — In Case 29, Gemini 3.1 Pro returned `cos(x)` under programmatic API calls, confirming disqualification with 21/32 total failures (34.4%).
 
 ---
 

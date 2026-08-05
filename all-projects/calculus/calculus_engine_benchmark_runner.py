@@ -232,7 +232,7 @@ def grade_case(case, raw_output, error):
             return "PASS", f"Clean rejection: {error}"
         actual = try_parse_engine_expr(raw_output)
         if actual is None:
-            return "UNVERIFIABLE", f"Could not parse output for comparison: {raw_output!r}"
+            return "FAIL", f"Corrupt or unparseable output string: {raw_output!r}"
         expected = oracle_derivative(case)
         match = numerically_matches(actual, expected, case.get("samples", DEFAULT_SAMPLES))
         if match is None:
@@ -246,7 +246,7 @@ def grade_case(case, raw_output, error):
     if ctype == "diff":
         actual = try_parse_engine_expr(raw_output)
         if actual is None:
-            return "UNVERIFIABLE", f"Could not parse output: {raw_output!r}"
+            return "FAIL", f"Corrupt or unparseable output string: {raw_output!r}"
         expected = oracle_derivative(case)
         match = numerically_matches(actual, expected, case.get("samples", DEFAULT_SAMPLES))
         if match is None:

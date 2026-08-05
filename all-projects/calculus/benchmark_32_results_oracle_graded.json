@@ -1,7 +1,7 @@
 {
   "mmcli-flash-calculus": {
     "title": "mmcli-flash (Gemini 3.6 Flash Full CAS)",
-    "time": 0.04154682159423828,
+    "time": 0.043998003005981445,
     "results": [
       {
         "id": 1,
@@ -35,8 +35,8 @@
       },
       {
         "id": 7,
-        "status": "UNVERIFIABLE",
-        "reason": "Could not parse output: '(asin + acos)'"
+        "status": "FAIL",
+        "reason": "Corrupt or unparseable output string: '(asin + acos)'"
       },
       {
         "id": 8,
@@ -167,7 +167,7 @@
   },
   "mmcli-flash-lite-calculus": {
     "title": "mmcli-flash-lite (Gemini 3.5 Flash-Lite)",
-    "time": 0.03534698486328125,
+    "time": 0.03994274139404297,
     "results": [
       {
         "id": 1,
@@ -333,7 +333,7 @@
   },
   "antigravity-flash-calculus": {
     "title": "antigravity-flash (Gemini 3.6 Flash)",
-    "time": 0.034639835357666016,
+    "time": 0.035508155822753906,
     "results": [
       {
         "id": 1,
@@ -367,8 +367,8 @@
       },
       {
         "id": 7,
-        "status": "UNVERIFIABLE",
-        "reason": "Could not parse output: 'asin + acos'"
+        "status": "FAIL",
+        "reason": "Corrupt or unparseable output string: 'asin + acos'"
       },
       {
         "id": 8,
@@ -499,7 +499,7 @@
   },
   "antigravity-opus-calculus": {
     "title": "antigravity-opus (Claude Opus 4.6)",
-    "time": 0.03197169303894043,
+    "time": 0.03077101707458496,
     "results": [
       {
         "id": 1,
@@ -533,8 +533,8 @@
       },
       {
         "id": 7,
-        "status": "UNVERIFIABLE",
-        "reason": "Could not parse output: '(asin + acos)'"
+        "status": "FAIL",
+        "reason": "Corrupt or unparseable output string: '(asin + acos)'"
       },
       {
         "id": 8,
@@ -588,13 +588,13 @@
       },
       {
         "id": 18,
-        "status": "UNVERIFIABLE",
-        "reason": "Could not parse output: '(sqrt * ((2 * sin(x)) * cos(x)))'"
+        "status": "FAIL",
+        "reason": "Corrupt or unparseable output string: '(sqrt * ((2 * sin(x)) * cos(x)))'"
       },
       {
         "id": 19,
-        "status": "UNVERIFIABLE",
-        "reason": "Could not parse output: '(exp((sqrt * ((x ^ 2) + 4))) * (sqrt * (2 * x)))'"
+        "status": "FAIL",
+        "reason": "Corrupt or unparseable output string: '(exp((sqrt * ((x ^ 2) + 4))) * (sqrt * (2 * x)))'"
       },
       {
         "id": 20,
@@ -603,13 +603,13 @@
       },
       {
         "id": 21,
-        "status": "UNVERIFIABLE",
-        "reason": "Could not parse output: '(sqrt * ((3 * (x ^ 2)) + 2))'"
+        "status": "FAIL",
+        "reason": "Corrupt or unparseable output string: '(sqrt * ((3 * (x ^ 2)) + 2))'"
       },
       {
         "id": 22,
-        "status": "UNVERIFIABLE",
-        "reason": "Could not parse output: '((1 / sqrt) * (-(2 * x)))'"
+        "status": "FAIL",
+        "reason": "Corrupt or unparseable output string: '((1 / sqrt) * (-(2 * x)))'"
       },
       {
         "id": 23,
@@ -618,8 +618,8 @@
       },
       {
         "id": 24,
-        "status": "UNVERIFIABLE",
-        "reason": "Could not parse output: '((sqrt * ln((sqrt * x))) + ((sqrt * x) * ((1 / (sqrt * x)) * sqrt)))'"
+        "status": "FAIL",
+        "reason": "Corrupt or unparseable output string: '((sqrt * ln((sqrt * x))) + ((sqrt * x) * ((1 / (sqrt * x)) * sqrt)))'"
       },
       {
         "id": 25,
@@ -665,7 +665,7 @@
   },
   "antigravity-gemini-pro-calculus": {
     "title": "antigravity-gemini-pro (Gemini 3.1 Pro)",
-    "time": 0.06853365898132324,
+    "time": 0.06470489501953125,
     "results": [
       {
         "id": 1,
