@@ -6,11 +6,11 @@ Run Full Benchmark (All Engines, saves to oracle_graded):
     python3 main.py --benchmark
 
 Run Individual Benchmarks (saves to multi_test):
+    python3 main.py -p ag-flash --benchmark
+    python3 main.py -p pro --benchmark
+    python3 main.py -p opus --benchmark
     python3 main.py -p flash --benchmark
     python3 main.py -p lite --benchmark
-    python3 main.py -p ag-flash --benchmark
-    python3 main.py -p opus --benchmark
-    python3 main.py -p pro --benchmark
 
 
 Key differences from the earlier version:
