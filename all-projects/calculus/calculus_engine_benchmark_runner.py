@@ -2,6 +2,10 @@
 32-Equation Calculus Engine Benchmark Runner
 =============================================
 
+Run Tests:
+    python3 main.py --benchmark
+
+
 Key differences from the earlier version:
   1. Every diff/int/defint/lim case is graded against a real expected value,
      computed independently by sympy (the "oracle") -- not just "did it run
