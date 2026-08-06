@@ -20,7 +20,8 @@ def limit(
     expr: Expr,
     var: Union[str, Symbol],
     point: Union[float, int, str, Expr],
-    direction: str = "both"
+    direction: str = "both",
+    _lhopital_depth: int = 0
 ) -> Union[Expr, float]:
     """
     Evaluate the limit of expr as var approaches point.
@@ -62,13 +63,14 @@ def limit(
             # Try algebraic cancellation first
             cancelled = _try_cancel_factor(num, den, var_name, pt_expr)
             if cancelled is not None:
-                return limit(cancelled, var_name, point, direction)
+                return limit(cancelled, var_name, point, direction, _lhopital_depth=_lhopital_depth)
 
-            # Apply L'Hôpital's Rule: lim f/g = lim f'/g'
-            d_num = diff(num, var_name)
-            d_den = diff(den, var_name)
-            lhopital_expr = Div(d_num, d_den)
-            return limit(lhopital_expr, var_name, point, direction)
+            # Apply L'Hôpital's Rule: lim f/g = lim f'/g' with depth guard
+            if _lhopital_depth < 5:
+                d_num = diff(num, var_name)
+                d_den = diff(den, var_name)
+                lhopital_expr = Div(d_num, d_den)
+                return limit(lhopital_expr, var_name, point, direction, _lhopital_depth=_lhopital_depth + 1)
 
     # 3. Numeric probe fallback for limits that are hard symbolically
     probe_val = _numeric_limit_probe(expr, var_name, pt_expr.eval(), direction)
@@ -123,10 +125,25 @@ def _limit_at_infinity(expr: Expr, var: str, positive: bool) -> float:
                 if c_num is not None and c_den is not None and c_den != 0:
                     return c_num / c_den
             if deg_num > deg_den:
-                c_num = _poly_leading_coef(num, var) or 1.0
-                c_den = _poly_leading_coef(den, var) or 1.0
+                c_num = _poly_leading_coef(num, var)
+                c_den = _poly_leading_coef(den, var)
+                if c_num is None: c_num = 1.0
+                if c_den is None: c_den = 1.0
+                power_diff = deg_num - deg_den
                 sign = 1.0 if (c_num * c_den) > 0 else -1.0
+                if not positive and (power_diff % 2 == 1):
+                    sign = -sign
                 return float('inf') * sign
+
+    # Non-fraction polynomial at infinity
+    deg = _poly_degree(expr, var)
+    if deg is not None and deg > 0:
+        c = _poly_leading_coef(expr, var)
+        if c is not None and c != 0:
+            sign = 1.0 if c > 0 else -1.0
+            if not positive and (deg % 2 == 1):
+                sign = -sign
+            return float('inf') * sign
 
     # Probe at large value x = 1e6
     probe_x = 1e6 if positive else -1e6
@@ -134,6 +151,10 @@ def _limit_at_infinity(expr: Expr, var: str, positive: bool) -> float:
         val = expr.eval({var: probe_x})
         if math.isclose(val, 0.0, abs_tol=1e-4):
             return 0.0
+        if val > 1e10:
+            return float('inf')
+        if val < -1e10:
+            return float('-inf')
         return round(val, 6)
     except Exception:
         return float('inf') if positive else float('-inf')
@@ -145,9 +166,22 @@ def _poly_degree(expr: Expr, var: str) -> Optional[int]:
         return 0
     if isinstance(expr, Symbol) and expr.name == var:
         return 1
-    if isinstance(expr, Pow) and isinstance(expr.left, Symbol) and expr.left.name == var and isinstance(expr.right, Const):
-        return int(expr.right.value)
+    if isinstance(expr, Neg):
+        return _poly_degree(expr.operand, var)
+    if isinstance(expr, Pow):
+        if isinstance(expr.right, Const):
+            k = expr.right.value
+            if isinstance(k, (int, float)) and k >= 0 and float(k).is_integer():
+                d_base = _poly_degree(expr.left, var)
+                if d_base is not None:
+                    return d_base * int(k)
+        return None
     if isinstance(expr, Add):
+        d1 = _poly_degree(expr.left, var)
+        d2 = _poly_degree(expr.right, var)
+        if d1 is not None and d2 is not None:
+            return max(d1, d2)
+    if isinstance(expr, Sub):
         d1 = _poly_degree(expr.left, var)
         d2 = _poly_degree(expr.right, var)
         if d1 is not None and d2 is not None:
@@ -166,15 +200,49 @@ def _poly_leading_coef(expr: Expr, var: str) -> Optional[float]:
     if deg is None:
         return None
     if deg == 0:
-        return expr.eval() if not expr.free_symbols() else None
-    if isinstance(expr, Symbol) and expr.name == var and deg == 1:
+        try:
+            return float(expr.eval())
+        except Exception:
+            return None
+    if isinstance(expr, Symbol) and expr.name == var:
         return 1.0
+    if isinstance(expr, Neg):
+        c = _poly_leading_coef(expr.operand, var)
+        return -c if c is not None else None
+    if isinstance(expr, Add):
+        d1 = _poly_degree(expr.left, var)
+        d2 = _poly_degree(expr.right, var)
+        if d1 is not None and d2 is not None:
+            if d1 > d2:
+                return _poly_leading_coef(expr.left, var)
+            if d2 > d1:
+                return _poly_leading_coef(expr.right, var)
+            c1 = _poly_leading_coef(expr.left, var)
+            c2 = _poly_leading_coef(expr.right, var)
+            return (c1 + c2) if (c1 is not None and c2 is not None) else None
+    if isinstance(expr, Sub):
+        d1 = _poly_degree(expr.left, var)
+        d2 = _poly_degree(expr.right, var)
+        if d1 is not None and d2 is not None:
+            if d1 > d2:
+                return _poly_leading_coef(expr.left, var)
+            if d2 > d1:
+                c2 = _poly_leading_coef(expr.right, var)
+                return -c2 if c2 is not None else None
+            c1 = _poly_leading_coef(expr.left, var)
+            c2 = _poly_leading_coef(expr.right, var)
+            return (c1 - c2) if (c1 is not None and c2 is not None) else None
     if isinstance(expr, Mul):
-        if isinstance(expr.left, Const):
-            return float(expr.left.value) * (_poly_leading_coef(expr.right, var) or 1.0)
+        c1 = _poly_leading_coef(expr.left, var)
+        c2 = _poly_leading_coef(expr.right, var)
+        return (c1 * c2) if (c1 is not None and c2 is not None) else None
+    if isinstance(expr, Pow):
         if isinstance(expr.right, Const):
-            return float(expr.right.value) * (_poly_leading_coef(expr.left, var) or 1.0)
-    return 1.0
+            k = expr.right.value
+            if isinstance(k, (int, float)) and k >= 0 and float(k).is_integer():
+                c_base = _poly_leading_coef(expr.left, var)
+                return (c_base ** int(k)) if c_base is not None else None
+    return None
 
 
 def _numeric_limit_probe(expr: Expr, var: str, x0: float, direction: str) -> Optional[float]:

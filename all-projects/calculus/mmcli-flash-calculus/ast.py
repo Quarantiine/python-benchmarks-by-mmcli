@@ -5,6 +5,7 @@ Provides core expression classes representing constants, variables, binary opera
 unary operators, and elementary math functions with operator overloading.
 """
 
+from __future__ import annotations
 from abc import ABC, abstractmethod
 import math
 from typing import Dict, Set, Union, Any, Optional
@@ -26,7 +27,7 @@ class Expr(ABC):
         pass
 
     @abstractmethod
-    def subs(self, var: str, replacement: "Expr") -> "Expr":
+    def subs(self, var: Union[str, "Symbol"], replacement: Any) -> "Expr":
         """Substitute all occurrences of symbol `var` with `replacement` expression."""
         pass
 
@@ -72,41 +73,70 @@ def _to_expr(val: Any) -> Expr:
     """Helper to convert numbers to Const and keep Expr intact."""
     if isinstance(val, Expr):
         return val
-    if isinstance(val, (int, float)):
+    if isinstance(val, bool):
+        raise TypeError(f"Cannot convert boolean {val} to Expr")
+    if isinstance(val, (int, float, complex)):
         return Const(val)
     raise TypeError(f"Cannot convert object of type {type(val)} to Expr")
 
 
 class Const(Expr):
-    """Represents a constant numeric scalar value (int or float)."""
+    """Represents a constant numeric scalar value (int, float, or complex)."""
 
-    def __init__(self, value: Number):
+    def __init__(self, value: Union[Number, complex]):
+        if isinstance(value, bool):
+            raise TypeError(f"Cannot initialize Const with boolean {value}")
         if isinstance(value, float) and value.is_integer():
-            self.value: Number = int(value)
+            self.value: Union[Number, complex] = int(value)
         else:
             self.value = value
 
     def eval(self, env: Optional[Dict[str, float]] = None) -> float:
-        return float(self.value)
+        if isinstance(self.value, complex):
+            if abs(self.value.imag) < 1e-15:
+                return float(self.value.real)
+            raise ValueError(f"Cannot convert complex number {self.value} to float in evaluation.")
+        try:
+            return float(self.value)
+        except OverflowError:
+            raise OverflowError(f"Numeric constant {self.value} is too large for float evaluation.")
 
     def free_symbols(self) -> Set[str]:
         return set()
 
-    def subs(self, var: str, replacement: Expr) -> Expr:
+    def subs(self, var: Union[str, "Symbol"], replacement: Any) -> Expr:
         return self
 
     def __eq__(self, other: Any) -> bool:
+        if isinstance(other, bool):
+            return False
         if isinstance(other, Const):
-            return math.isclose(self.value, other.value, rel_tol=1e-9, abs_tol=1e-9)
-        if isinstance(other, (int, float)):
-            return math.isclose(self.value, other, rel_tol=1e-9, abs_tol=1e-9)
-        return False
+            other_val = other.value
+        elif isinstance(other, (int, float, complex)):
+            other_val = other
+        else:
+            return False
+
+        v1 = self.value
+        v2 = other_val
+
+        if isinstance(v1, complex) or isinstance(v2, complex):
+            return abs(v1 - v2) < 1e-9
+        try:
+            return math.isclose(float(v1), float(v2), rel_tol=1e-9, abs_tol=1e-9)
+        except (TypeError, ValueError, OverflowError):
+            return v1 == v2
 
     def __hash__(self) -> int:
-        return hash(("Const", float(self.value)))
+        if isinstance(self.value, complex):
+            return hash(("Const", self.value.real, self.value.imag))
+        try:
+            return hash(("Const", float(self.value)))
+        except (OverflowError, ValueError):
+            return hash(("Const", self.value))
 
     def __repr__(self) -> str:
-        return f"Const({self.value})"
+        return f"Const({self.value!r})"
 
     def __str__(self) -> str:
         return str(self.value)
@@ -123,14 +153,19 @@ class Symbol(Expr):
     def eval(self, env: Optional[Dict[str, float]] = None) -> float:
         if env is not None and self.name in env:
             return float(env[self.name])
+        if self.name == "e":
+            return math.e
+        if self.name == "pi":
+            return math.pi
         raise ValueError(f"Variable '{self.name}' not provided in evaluation environment.")
 
     def free_symbols(self) -> Set[str]:
         return {self.name}
 
-    def subs(self, var: str, replacement: Expr) -> Expr:
-        if self.name == var:
-            return replacement
+    def subs(self, var: Union[str, Symbol], replacement: Any) -> Expr:
+        var_name = var.name if isinstance(var, Symbol) else str(var)
+        if self.name == var_name:
+            return _to_expr(replacement)
         return self
 
     def __eq__(self, other: Any) -> bool:
@@ -171,8 +206,9 @@ class Add(BinaryOp):
     def eval(self, env: Optional[Dict[str, float]] = None) -> float:
         return self.left.eval(env) + self.right.eval(env)
 
-    def subs(self, var: str, replacement: Expr) -> Expr:
-        return Add(self.left.subs(var, replacement), self.right.subs(var, replacement))
+    def subs(self, var: Union[str, Symbol], replacement: Any) -> Expr:
+        repl = _to_expr(replacement)
+        return Add(self.left.subs(var, repl), self.right.subs(var, repl))
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, Add) and self.left == other.left and self.right == other.right
@@ -190,8 +226,9 @@ class Sub(BinaryOp):
     def eval(self, env: Optional[Dict[str, float]] = None) -> float:
         return self.left.eval(env) - self.right.eval(env)
 
-    def subs(self, var: str, replacement: Expr) -> Expr:
-        return Sub(self.left.subs(var, replacement), self.right.subs(var, replacement))
+    def subs(self, var: Union[str, Symbol], replacement: Any) -> Expr:
+        repl = _to_expr(replacement)
+        return Sub(self.left.subs(var, repl), self.right.subs(var, repl))
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, Sub) and self.left == other.left and self.right == other.right
@@ -209,8 +246,9 @@ class Mul(BinaryOp):
     def eval(self, env: Optional[Dict[str, float]] = None) -> float:
         return self.left.eval(env) * self.right.eval(env)
 
-    def subs(self, var: str, replacement: Expr) -> Expr:
-        return Mul(self.left.subs(var, replacement), self.right.subs(var, replacement))
+    def subs(self, var: Union[str, Symbol], replacement: Any) -> Expr:
+        repl = _to_expr(replacement)
+        return Mul(self.left.subs(var, repl), self.right.subs(var, repl))
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, Mul) and self.left == other.left and self.right == other.right
@@ -231,8 +269,9 @@ class Div(BinaryOp):
             raise ZeroDivisionError("Division by zero during evaluation.")
         return self.left.eval(env) / denom
 
-    def subs(self, var: str, replacement: Expr) -> Expr:
-        return Div(self.left.subs(var, replacement), self.right.subs(var, replacement))
+    def subs(self, var: Union[str, Symbol], replacement: Any) -> Expr:
+        repl = _to_expr(replacement)
+        return Div(self.left.subs(var, repl), self.right.subs(var, repl))
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, Div) and self.left == other.left and self.right == other.right
@@ -250,10 +289,16 @@ class Pow(BinaryOp):
     def eval(self, env: Optional[Dict[str, float]] = None) -> float:
         base_val = self.left.eval(env)
         exp_val = self.right.eval(env)
-        return math.pow(base_val, exp_val)
+        if math.isclose(base_val, 0.0, abs_tol=1e-15) and exp_val < 0:
+            raise ZeroDivisionError("0 cannot be raised to a negative power.")
+        try:
+            return math.pow(base_val, exp_val)
+        except ValueError:
+            raise ValueError(f"Domain error: negative base {base_val} raised to non-integer power {exp_val}.")
 
-    def subs(self, var: str, replacement: Expr) -> Expr:
-        return Pow(self.left.subs(var, replacement), self.right.subs(var, replacement))
+    def subs(self, var: Union[str, Symbol], replacement: Any) -> Expr:
+        repl = _to_expr(replacement)
+        return Pow(self.left.subs(var, repl), self.right.subs(var, repl))
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, Pow) and self.left == other.left and self.right == other.right
@@ -284,8 +329,9 @@ class Neg(UnaryOp):
     def eval(self, env: Optional[Dict[str, float]] = None) -> float:
         return -self.operand.eval(env)
 
-    def subs(self, var: str, replacement: Expr) -> Expr:
-        return Neg(self.operand.subs(var, replacement))
+    def subs(self, var: Union[str, Symbol], replacement: Any) -> Expr:
+        repl = _to_expr(replacement)
+        return Neg(self.operand.subs(var, repl))
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, Neg) and self.operand == other.operand
@@ -308,8 +354,9 @@ class Sin(Function):
     def eval(self, env: Optional[Dict[str, float]] = None) -> float:
         return math.sin(self.operand.eval(env))
 
-    def subs(self, var: str, replacement: Expr) -> Expr:
-        return Sin(self.operand.subs(var, replacement))
+    def subs(self, var: Union[str, Symbol], replacement: Any) -> Expr:
+        repl = _to_expr(replacement)
+        return Sin(self.operand.subs(var, repl))
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, Sin) and self.operand == other.operand
@@ -327,8 +374,9 @@ class Cos(Function):
     def eval(self, env: Optional[Dict[str, float]] = None) -> float:
         return math.cos(self.operand.eval(env))
 
-    def subs(self, var: str, replacement: Expr) -> Expr:
-        return Cos(self.operand.subs(var, replacement))
+    def subs(self, var: Union[str, Symbol], replacement: Any) -> Expr:
+        repl = _to_expr(replacement)
+        return Cos(self.operand.subs(var, repl))
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, Cos) and self.operand == other.operand
@@ -346,8 +394,9 @@ class Tan(Function):
     def eval(self, env: Optional[Dict[str, float]] = None) -> float:
         return math.tan(self.operand.eval(env))
 
-    def subs(self, var: str, replacement: Expr) -> Expr:
-        return Tan(self.operand.subs(var, replacement))
+    def subs(self, var: Union[str, Symbol], replacement: Any) -> Expr:
+        repl = _to_expr(replacement)
+        return Tan(self.operand.subs(var, repl))
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, Tan) and self.operand == other.operand
@@ -365,8 +414,9 @@ class Exp(Function):
     def eval(self, env: Optional[Dict[str, float]] = None) -> float:
         return math.exp(self.operand.eval(env))
 
-    def subs(self, var: str, replacement: Expr) -> Expr:
-        return Exp(self.operand.subs(var, replacement))
+    def subs(self, var: Union[str, Symbol], replacement: Any) -> Expr:
+        repl = _to_expr(replacement)
+        return Exp(self.operand.subs(var, repl))
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, Exp) and self.operand == other.operand
@@ -387,8 +437,9 @@ class Ln(Function):
             raise ValueError("Domain error: ln argument must be positive.")
         return math.log(val)
 
-    def subs(self, var: str, replacement: Expr) -> Expr:
-        return Ln(self.operand.subs(var, replacement))
+    def subs(self, var: Union[str, Symbol], replacement: Any) -> Expr:
+        repl = _to_expr(replacement)
+        return Ln(self.operand.subs(var, repl))
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, Ln) and self.operand == other.operand
@@ -409,8 +460,9 @@ class Sqrt(Function):
             raise ValueError("Domain error: sqrt argument must be non-negative.")
         return math.sqrt(val)
 
-    def subs(self, var: str, replacement: Expr) -> Expr:
-        return Sqrt(self.operand.subs(var, replacement))
+    def subs(self, var: Union[str, Symbol], replacement: Any) -> Expr:
+        repl = _to_expr(replacement)
+        return Sqrt(self.operand.subs(var, repl))
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, Sqrt) and self.operand == other.operand
@@ -428,8 +480,9 @@ class Abs(Function):
     def eval(self, env: Optional[Dict[str, float]] = None) -> float:
         return math.fabs(self.operand.eval(env))
 
-    def subs(self, var: str, replacement: Expr) -> Expr:
-        return Abs(self.operand.subs(var, replacement))
+    def subs(self, var: Union[str, Symbol], replacement: Any) -> Expr:
+        repl = _to_expr(replacement)
+        return Abs(self.operand.subs(var, repl))
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, Abs) and self.operand == other.operand

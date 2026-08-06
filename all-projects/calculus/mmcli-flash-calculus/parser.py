@@ -74,9 +74,11 @@ def tokenize(expr_str: str) -> List[Token]:
             t2 = raw_tokens[i + 1]
             # Cases for implicit multiplication:
             # NUMBER followed by IDENT or LPAREN (e.g., 2x, 2(x+1))
-            # IDENT (not function) followed by IDENT, NUMBER, or LPAREN (e.g., x y, x(y))
-            # RPAREN followed by IDENT, NUMBER, or LPAREN (e.g., (a+b)(c+d))
-            if t1.type in (TOKEN_NUMBER, TOKEN_RPAREN) and t2.type in (TOKEN_IDENT, TOKEN_NUMBER, TOKEN_LPAREN):
+            # RPAREN followed by IDENT, NUMBER, or LPAREN (e.g., (a+b)2, (a+b)(c+d))
+            # IDENT (not function) followed by IDENT, NUMBER, or LPAREN (e.g., x y, x 2, x(y))
+            if t1.type == TOKEN_NUMBER and t2.type in (TOKEN_IDENT, TOKEN_LPAREN):
+                tokens.append(Token(TOKEN_MUL, "*"))
+            elif t1.type == TOKEN_RPAREN and t2.type in (TOKEN_IDENT, TOKEN_NUMBER, TOKEN_LPAREN):
                 tokens.append(Token(TOKEN_MUL, "*"))
             elif t1.type == TOKEN_IDENT and t1.value.lower() not in KNOWN_FUNCTIONS:
                 if t2.type in (TOKEN_IDENT, TOKEN_NUMBER, TOKEN_LPAREN):
@@ -91,9 +93,6 @@ class Parser:
     def __init__(self, tokens: List[Token]):
         self.tokens = tokens
         self.pos = 0
-
-    def peek(self) -> Optional[Token]:
-        pass  # type hint helper
 
     def peek(self) -> Optional[Token]:
         if self.pos < len(self.tokens):
@@ -162,10 +161,18 @@ class Parser:
 
         if tok.type == TOKEN_NUMBER:
             self.consume()
-            val = float(tok.value)
-            if val.is_integer():
-                return Const(int(val))
-            return Const(val)
+            try:
+                if '.' in tok.value or 'e' in tok.value.lower():
+                    val = float(tok.value)
+                    if val.is_integer():
+                        return Const(int(val))
+                    return Const(val)
+                else:
+                    return Const(int(tok.value))
+            except OverflowError:
+                raise ValueError(f"Numeric literal value too large: {tok.value!r}")
+            except ValueError:
+                raise ValueError(f"Invalid numeric literal: {tok.value!r}")
 
         if tok.type == TOKEN_IDENT:
             self.consume()

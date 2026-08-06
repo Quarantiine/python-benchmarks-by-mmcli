@@ -30,6 +30,9 @@ def diff(expr: Expr, var: Union[str, Symbol], simplify_result: bool = True) -> E
 
 
 def _differentiate(expr: Expr, var: str) -> Expr:
+    if var not in expr.free_symbols():
+        return Const(0)
+
     if isinstance(expr, Const):
         return Const(0)
 

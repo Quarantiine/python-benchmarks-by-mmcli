@@ -13,6 +13,24 @@ from calculus.ast import (
 )
 
 
+def _make_const(val: Union[int, float, complex]) -> Const:
+    """Safely construct a Const, cleaning complex components and floating integer representations."""
+    if isinstance(val, complex):
+        r = val.real
+        i = val.imag
+        if abs(r) < 1e-15:
+            r = 0.0
+        if abs(i) < 1e-15:
+            i = 0.0
+        if i == 0.0:
+            val = r
+        else:
+            val = complex(r, i)
+    if isinstance(val, float) and val.is_integer():
+        return Const(int(val))
+    return Const(val)
+
+
 def simplify(expr: Expr, max_passes: int = 10) -> Expr:
     """Recursively simplify an expression until no further rules apply or max_passes is reached."""
     current = expr
@@ -31,7 +49,7 @@ def _simplify_step(expr: Expr) -> Expr:
     if isinstance(expr, Neg):
         sub = _simplify_step(expr.operand)
         if isinstance(sub, Const):
-            return Const(-sub.value)
+            return _make_const(-sub.value)
         if isinstance(sub, Neg):
             return sub.operand
         return Neg(sub)
@@ -42,7 +60,7 @@ def _simplify_step(expr: Expr) -> Expr:
 
         # Constant folding
         if isinstance(left, Const) and isinstance(right, Const):
-            return Const(left.value + right.value)
+            return _make_const(left.value + right.value)
 
         # Add zero identity
         if isinstance(left, Const) and left.value == 0:
@@ -69,7 +87,26 @@ def _simplify_step(expr: Expr) -> Expr:
                 return Const(0)
             if new_c == 1:
                 return term1
-            return Mul(Const(new_c), term1)
+            return Mul(_make_const(new_c), term1)
+
+        # Associative constant gathering for addition
+        if isinstance(right, Const):
+            if isinstance(left, Add) and isinstance(left.right, Const):
+                return Add(left.left, _make_const(left.right.value + right.value))
+            if isinstance(left, Add) and isinstance(left.left, Const):
+                return Add(left.right, _make_const(left.left.value + right.value))
+            if isinstance(left, Sub) and isinstance(left.right, Const):
+                return Add(left.left, _make_const(right.value - left.right.value))
+            if isinstance(left, Sub) and isinstance(left.left, Const):
+                return Sub(_make_const(left.left.value + right.value), left.right)
+
+        if isinstance(left, Const):
+            if isinstance(right, Add) and isinstance(right.right, Const):
+                return Add(right.left, _make_const(left.value + right.right.value))
+            if isinstance(right, Add) and isinstance(right.left, Const):
+                return Add(right.right, _make_const(left.value + right.left.value))
+            if isinstance(right, Sub) and isinstance(right.right, Const):
+                return Add(right.left, _make_const(left.value - right.right.value))
 
         # Ordering constants to the right for canonical form
         if isinstance(left, Const) and not isinstance(right, Const):
@@ -83,7 +120,7 @@ def _simplify_step(expr: Expr) -> Expr:
 
         # Constant folding
         if isinstance(left, Const) and isinstance(right, Const):
-            return Const(left.value - right.value)
+            return _make_const(left.value - right.value)
 
         # Sub zero identity
         if isinstance(right, Const) and right.value == 0:
@@ -110,7 +147,26 @@ def _simplify_step(expr: Expr) -> Expr:
                 return Const(0)
             if new_c == 1:
                 return term1
-            return Mul(Const(new_c), term1)
+            return Mul(_make_const(new_c), term1)
+
+        # Associative constant gathering for subtraction
+        if isinstance(right, Const):
+            if isinstance(left, Add) and isinstance(left.right, Const):
+                return Add(left.left, _make_const(left.right.value - right.value))
+            if isinstance(left, Add) and isinstance(left.left, Const):
+                return Add(left.right, _make_const(left.left.value - right.value))
+            if isinstance(left, Sub) and isinstance(left.right, Const):
+                return Sub(left.left, _make_const(left.right.value + right.value))
+            if isinstance(left, Sub) and isinstance(left.left, Const):
+                return Sub(_make_const(left.left.value - right.value), left.right)
+
+        if isinstance(left, Const):
+            if isinstance(right, Add) and isinstance(right.right, Const):
+                return Sub(_make_const(left.value - right.right.value), right.left)
+            if isinstance(right, Add) and isinstance(right.left, Const):
+                return Sub(_make_const(left.value - right.left.value), right.right)
+            if isinstance(right, Sub) and isinstance(right.right, Const):
+                return Sub(_make_const(left.value + right.right.value), right.left)
 
         return Sub(left, right)
 
@@ -120,7 +176,7 @@ def _simplify_step(expr: Expr) -> Expr:
 
         # Constant folding
         if isinstance(left, Const) and isinstance(right, Const):
-            return Const(left.value * right.value)
+            return _make_const(left.value * right.value)
 
         # Zero property: 0 * x -> 0, x * 0 -> 0
         if (isinstance(left, Const) and left.value == 0) or (isinstance(right, Const) and right.value == 0):
@@ -153,8 +209,17 @@ def _simplify_step(expr: Expr) -> Expr:
             return Pow(b1, Add(e1, e2))
 
         # Associative constant gathering: c1 * (c2 * x) -> (c1*c2) * x
-        if isinstance(left, Const) and isinstance(right, Mul) and isinstance(right.left, Const):
-            return Mul(Const(left.value * right.left.value), right.right)
+        if isinstance(right, Const):
+            if isinstance(left, Mul) and isinstance(left.right, Const):
+                return Mul(_make_const(left.right.value * right.value), left.left)
+            if isinstance(left, Mul) and isinstance(left.left, Const):
+                return Mul(_make_const(left.left.value * right.value), left.right)
+
+        if isinstance(left, Const):
+            if isinstance(right, Mul) and isinstance(right.right, Const):
+                return Mul(_make_const(left.value * right.right.value), right.left)
+            if isinstance(right, Mul) and isinstance(right.left, Const):
+                return Mul(_make_const(left.value * right.left.value), right.right)
 
         # Move constant coefficient to left: x * c -> c * x
         if isinstance(right, Const) and not isinstance(left, Const):
@@ -170,10 +235,7 @@ def _simplify_step(expr: Expr) -> Expr:
         if isinstance(left, Const) and isinstance(right, Const):
             if right.value == 0:
                 raise ZeroDivisionError("Division by zero in simplification.")
-            val = left.value / right.value
-            if val.is_integer():
-                return Const(int(val))
-            return Const(val)
+            return _make_const(left.value / right.value)
 
         # 0 / x -> 0
         if isinstance(left, Const) and left.value == 0:
@@ -213,7 +275,15 @@ def _simplify_step(expr: Expr) -> Expr:
 
         # Constant folding
         if isinstance(base, Const) and isinstance(exp, Const):
-            return Const(base.value ** exp.value)
+            if base.value == 0 and isinstance(exp.value, (int, float, complex)) and (isinstance(exp.value, complex) or exp.value < 0):
+                raise ZeroDivisionError("Division by zero in simplification.")
+            try:
+                res = base.value ** exp.value
+                return _make_const(res)
+            except ZeroDivisionError:
+                raise ZeroDivisionError("Division by zero in simplification.")
+            except ArithmeticError:
+                return Pow(base, exp)
 
         # x ^ 0 -> 1
         if isinstance(exp, Const) and exp.value == 0:
@@ -280,18 +350,32 @@ def _simplify_step(expr: Expr) -> Expr:
             return Const(1)
         if isinstance(arg, Exp):
             return arg.operand
+        if isinstance(arg, Pow):
+            if arg.left == E_CONST or (isinstance(arg.left, Symbol) and arg.left.name == "e"):
+                return arg.right
+            return Mul(arg.right, Ln(arg.left))
         return Ln(arg)
 
     if isinstance(expr, Sqrt):
         arg = _simplify_step(expr.operand)
         if isinstance(arg, Const):
-            if arg.value == 0:
-                return Const(0)
-            if arg.value == 1:
-                return Const(1)
-            sq = math.isqrt(int(arg.value)) if arg.value >= 0 and arg.value.is_integer() else None
-            if sq is not None and sq * sq == int(arg.value):
-                return Const(sq)
+            v = arg.value
+            if isinstance(v, complex):
+                if abs(v.imag) < 1e-15:
+                    v = v.real
+                else:
+                    return Sqrt(arg)
+            if isinstance(v, (int, float)):
+                if v == 0:
+                    return Const(0)
+                if v == 1:
+                    return Const(1)
+                if v > 0:
+                    root = math.sqrt(v)
+                    if root.is_integer():
+                        return Const(int(root))
+                    elif root * root == v:
+                        return Const(root)
         if isinstance(arg, Pow) and isinstance(arg.right, Const) and arg.right.value == 2:
             return Abs(arg.left)
         return Sqrt(arg)
@@ -299,7 +383,10 @@ def _simplify_step(expr: Expr) -> Expr:
     if isinstance(expr, Abs):
         arg = _simplify_step(expr.operand)
         if isinstance(arg, Const):
-            return Const(abs(arg.value))
+            v = arg.value
+            if isinstance(v, complex):
+                return _make_const(abs(v))
+            return _make_const(abs(v))
         if isinstance(arg, Neg):
             return Abs(arg.operand)
         return Abs(arg)

@@ -33,6 +33,7 @@ def integrate(
     :return: Indefinite integral AST or scalar float value for definite integral.
     """
     var_name = var.name if isinstance(var, Symbol) else str(var)
+    expr = simplify(expr)
     indef_integral = _integrate_indefinite(expr, var_name)
 
     if simplify_result:
@@ -61,6 +62,8 @@ def integrate(
 
 
 def _integrate_indefinite(expr: Expr, var: str) -> Expr:
+    expr = simplify(expr)
+
     # 1. Independent of variable -> c * x
     if var not in expr.free_symbols():
         return Mul(expr, Symbol(var))
@@ -147,7 +150,7 @@ def _integrate_indefinite(expr: Expr, var: str) -> Expr:
             num = Sub(Mul(u, Ln(u)), u)
             return Div(num, Const(a))
 
-    # 10. Division (e.g. f(x) / c or 1 / (a*x + b))
+    # 10. Division (e.g. f(x) / c or 1 / (a*x + b) or c / (a*x + b)^n)
     if isinstance(expr, Div):
         left, right = expr.left, expr.right
         if var not in right.free_symbols():
@@ -158,36 +161,58 @@ def _integrate_indefinite(expr: Expr, var: str) -> Expr:
                 # integral c / (a*x + b) dx = (c/a) * ln(|a*x + b|)
                 return Mul(Div(left, Const(a)), Ln(Abs(right)))
 
+            if isinstance(right, Pow):
+                base, exp = right.left, right.right
+                if var in base.free_symbols() and var not in exp.free_symbols():
+                    a, b = _extract_linear_coefs(base, var)
+                    if a is not None:
+                        try:
+                            exp_val = exp.eval()
+                            if exp_val == 1:
+                                return Mul(Div(left, Const(a)), Ln(Abs(base)))
+                            new_exp = Sub(Const(1), exp)
+                            denom = Mul(Const(a), new_exp)
+                            return Div(Mul(left, Pow(base, new_exp)), denom)
+                        except Exception:
+                            pass
+
     raise NotImplementedError(f"Integration rule for expression '{expr}' with variable '{var}' is not supported.")
 
 
-def _extract_linear_coefs(expr: Expr, var: str) -> Tuple[Optional[float], Optional[float]]:
-    """Check if expr is linear in var (i.e. a*x + b) and return (a, b)."""
+def _get_linear_coefs_raw(expr: Expr, var: str) -> Tuple[Optional[float], Optional[float]]:
+    """Recursively calculate linear form a*x + b for sub-expressions."""
     expr = simplify(expr)
+    if isinstance(expr, Const) and var not in expr.free_symbols():
+        return (0.0, float(expr.value))
     if isinstance(expr, Symbol) and expr.name == var:
         return (1.0, 0.0)
-
+    if isinstance(expr, Neg):
+        a, b = _get_linear_coefs_raw(expr.operand, var)
+        if a is not None and b is not None:
+            return (-a, -b)
     if isinstance(expr, Mul):
         if isinstance(expr.left, Const) and isinstance(expr.right, Symbol) and expr.right.name == var:
             return (float(expr.left.value), 0.0)
         if isinstance(expr.right, Const) and isinstance(expr.left, Symbol) and expr.left.name == var:
             return (float(expr.right.value), 0.0)
-
     if isinstance(expr, Add):
-        a1, b1 = _extract_linear_coefs(expr.left, var)
-        a2, b2 = _extract_linear_coefs(expr.right, var)
-        if a1 is not None and a2 is not None:
+        a1, b1 = _get_linear_coefs_raw(expr.left, var)
+        a2, b2 = _get_linear_coefs_raw(expr.right, var)
+        if a1 is not None and a2 is not None and b1 is not None and b2 is not None:
             return (a1 + a2, b1 + b2)
-
     if isinstance(expr, Sub):
-        a1, b1 = _extract_linear_coefs(expr.left, var)
-        a2, b2 = _extract_linear_coefs(expr.right, var)
-        if a1 is not None and a2 is not None:
+        a1, b1 = _get_linear_coefs_raw(expr.left, var)
+        a2, b2 = _get_linear_coefs_raw(expr.right, var)
+        if a1 is not None and a2 is not None and b1 is not None and b2 is not None:
             return (a1 - a2, b1 - b2)
+    return (None, None)
 
-    if isinstance(expr, Const) and var not in expr.free_symbols():
-        return (0.0, float(expr.value))
 
+def _extract_linear_coefs(expr: Expr, var: str) -> Tuple[Optional[float], Optional[float]]:
+    """Check if expr is linear in var (a*x + b with a != 0) and return coefficients (a, b)."""
+    a, b = _get_linear_coefs_raw(expr, var)
+    if a is not None and a != 0:
+        return (a, b)
     return (None, None)
 
 
