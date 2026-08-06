@@ -500,7 +500,56 @@ def run_engine(proj, cases_json):
     return json.loads(out), None
 
 
+ALIAS_MAP = {
+    "flash": "mmcli-flash-calculus",
+    "mmcli-flash": "mmcli-flash-calculus",
+    "mmcli-flash-calculus": "mmcli-flash-calculus",
+    "lite": "mmcli-flash-lite-calculus",
+    "flash-lite": "mmcli-flash-lite-calculus",
+    "mmcli-flash-lite": "mmcli-flash-lite-calculus",
+    "mmcli-flash-lite-calculus": "mmcli-flash-lite-calculus",
+    "ag-flash": "antigravity-flash-calculus",
+    "antigravity-flash": "antigravity-flash-calculus",
+    "antigravity-flash-calculus": "antigravity-flash-calculus",
+    "opus": "antigravity-opus-calculus",
+    "antigravity-opus": "antigravity-opus-calculus",
+    "antigravity-opus-calculus": "antigravity-opus-calculus",
+    "pro": "antigravity-gemini-pro-calculus",
+    "antigravity-pro": "antigravity-gemini-pro-calculus",
+    "antigravity-gemini-pro": "antigravity-gemini-pro-calculus",
+    "antigravity-gemini-pro-calculus": "antigravity-gemini-pro-calculus",
+}
+
+
 def main():
+    target_engine_name = None
+    args = sys.argv[1:]
+    i = 0
+    while i < len(args):
+        arg = args[i]
+        if arg in ("--project", "-p", "--engine", "-e"):
+            if i + 1 < len(args):
+                target_engine_name = ALIAS_MAP.get(args[i + 1].lower(), args[i + 1])
+                i += 2
+                continue
+        elif arg.startswith("--project=") or arg.startswith("-p=") or arg.startswith("--engine=") or arg.startswith("-e="):
+            val = arg.split("=", 1)[1]
+            target_engine_name = ALIAS_MAP.get(val.lower(), val)
+            i += 1
+            continue
+        elif arg.lower() in ALIAS_MAP:
+            target_engine_name = ALIAS_MAP[arg.lower()]
+            i += 1
+            continue
+        i += 1
+
+    run_projects = projects
+    if target_engine_name:
+        run_projects = [p for p in projects if p["name"] == target_engine_name]
+        if not run_projects:
+            print(f"Error: Unknown engine '{target_engine_name}'. Available aliases: {list(ALIAS_MAP.keys())}", file=sys.stderr)
+            sys.exit(1)
+
     cases_by_id = {c["id"]: c for c in test_cases}
     cases_json = json.dumps(test_cases)
 
@@ -510,7 +559,7 @@ def main():
     print("        32-EQUATION BENCHMARK -- ORACLE-VERIFIED, UNIFIED GRADING")
     print("=" * 88)
 
-    for proj in projects:
+    for proj in run_projects:
         print(f"\n>>> {proj['title']}")
         start = time.time()
         raw_results, run_error = run_engine(proj, cases_json)
@@ -527,19 +576,24 @@ def main():
                 status, reason = grade_case(case, r.get("output"), r.get("error"))
                 graded.append({"id": r["id"], "status": status, "reason": reason})
 
-        all_graded[proj["name"]] = {"title": proj["title"], "time": elapsed, "results": graded}
+        proj_graded_data = {"title": proj["title"], "time": elapsed, "results": graded}
+        all_graded[proj["name"]] = proj_graded_data
 
         passes = sum(1 for g in graded if g["status"] == "PASS")
         fails = sum(1 for g in graded if g["status"] == "FAIL")
         unverif = sum(1 for g in graded if g["status"] == "UNVERIFIABLE")
         print(f"    Time: {elapsed:.2f}s | PASS {passes}/32 | FAIL {fails}/32 | UNVERIFIABLE {unverif}/32")
 
+        # Save single-engine results JSON into the specific project folder
+        folder_path = Path(__file__).resolve().parent / proj["name"]
+        folder_path.mkdir(parents=True, exist_ok=True)
+        folder_json_path = folder_path / "benchmark_32_results.json"
+        with open(folder_json_path, "w") as f:
+            json.dump({proj["name"]: proj_graded_data}, f, indent=2)
+        print(f"    Saved per-folder results to: {folder_json_path}")
+
     # -----------------------------------------------------------------
-    # Summary -- report both a full-scope score (all 32) and a
-    # differentiation-only score (Categories 1-6 + 8 = 28 equations),
-    # since only two engines implement integration/limits. Folding
-    # Category 7 into one blended number would penalize engines for a
-    # scope decision, not a correctness failure.
+    # Summary
     # -----------------------------------------------------------------
     diff_only_ids = {c["id"] for c in test_cases if c["cat"] != "Integration & Limits"}
 
@@ -560,10 +614,21 @@ def main():
 
     print("=" * 88)
 
-    out_path = Path(__file__).resolve().parent / "benchmark_32_results_oracle_graded.json"
-    with open(out_path, "w") as f:
-        json.dump(all_graded, f, indent=2)
-    print(f"\nFull per-case breakdown (with reasons) saved to {out_path}")
+    # Save / Update global results JSON
+    global_out_path = Path(__file__).resolve().parent / "benchmark_32_results_oracle_graded.json"
+    global_data = {}
+    if global_out_path.exists():
+        try:
+            with open(global_out_path, "r") as f:
+                global_data = json.load(f)
+        except Exception:
+            global_data = {}
+    
+    global_data.update(all_graded)
+
+    with open(global_out_path, "w") as f:
+        json.dump(global_data, f, indent=2)
+    print(f"\nUpdated global benchmark summary at: {global_out_path}")
 
 
 if __name__ == "__main__":

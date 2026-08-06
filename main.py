@@ -260,7 +260,27 @@ def main():
         elif arg in ("--benchmark", "-b", "--bench"):
             import subprocess
             runner_path = BASE_DIR / "all-projects" / "calculus" / "calculus_engine_benchmark_runner.py"
-            res = subprocess.run([sys.executable, str(runner_path)])
+            runner_args = []
+            if target_project:
+                runner_args.extend(["-p", target_project["dir_name"]])
+            args_list = sys.argv[1:]
+            j = i + 1
+            while j < len(args_list):
+                a = args_list[j]
+                if a in ("--project", "-p", "--engine", "-e") and j + 1 < len(args_list):
+                    runner_args.extend([a, args_list[j + 1]])
+                    j += 2
+                    continue
+                elif a.startswith("--project=") or a.startswith("-p=") or a.startswith("--engine=") or a.startswith("-e="):
+                    runner_args.append(a)
+                    j += 1
+                    continue
+                elif a in PROJECTS_ALIAS_MAP:
+                    runner_args.extend(["-p", a])
+                    j += 1
+                    continue
+                j += 1
+            res = subprocess.run([sys.executable, str(runner_path)] + runner_args)
             sys.exit(res.returncode)
         else:
             clean_args.append(arg)

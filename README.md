@@ -43,7 +43,9 @@ You can switch between any of the calculus builds under `all-projects/calculus/`
 python3 main.py --select
 
 # 2. Run the 32-Equation SymPy Oracle Benchmark Suite:
-python3 main.py --benchmark
+python3 main.py --benchmark                               # Run across all 5 engines
+python3 main.py -p lite --benchmark                       # Run benchmark ONLY for Flash-Lite (saves to lite folder)
+python3 main.py -p flash --benchmark                      # Run benchmark ONLY for Flash CAS (saves to flash folder)
 
 # 3. Run a specific engine by name or alias:
 python3 main.py -p flash                  # Minovative Mind CLI (Gemini 3.6 Flash CAS)
