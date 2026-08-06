@@ -194,3 +194,14 @@ antigravity-gemini-pro (Gemini 3.1 Pro)   | 11/32 (34.4%) |  11/28 (39.3%) |    
 - **Verdict:** **Disqualified.** Failed core architectural constraints, dependency limits, and basic syntax parsing across the 32-equation suite.
 
 ---
+
+You previously built a symbolic calculus engine at [project path]. Independent
+oracle-verified testing found the following inputs produce incorrect results.
+For each, the input expression and what your engine currently outputs are given.
+
+[paste the filtered id/expr/reason entries for THIS engine only, verbatim]
+
+Diagnose the root cause in your own code for each and fix it — fix the
+underlying defect, not just these specific input strings. Do not modify your
+test suite to make these pass artificially. Run your existing pytest suite
+after fixing to confirm no regressions, then report what changed and why.
