@@ -32,8 +32,14 @@ class ConstNode(Node):
         return Tree(f"[cyan]Const[/cyan]: {self.value}")
 
     def __str__(self) -> str:
-        if isinstance(self.value, int) or self.value.is_integer():
-            return str(int(self.value))
+        if isinstance(self.value, complex):
+            return str(self.value)
+        if isinstance(self.value, (int, float)):
+            try:
+                if self.value.is_integer():
+                    return str(int(self.value))
+            except (AttributeError, ValueError, OverflowError):
+                pass
         return str(self.value)
 
 
@@ -186,7 +192,11 @@ class DivNode(Node):
         left = self.left.simplify()
         right = self.right.simplify()
 
-        if isinstance(left, ConstNode) and isinstance(right, ConstNode) and right.value != 0:
+        if isinstance(right, ConstNode) and right.value == 0:
+            if isinstance(left, ConstNode) and left.value == 0:
+                return ConstNode(float('nan'))
+            return DivNode(left, right)
+        if isinstance(left, ConstNode) and isinstance(right, ConstNode):
             return ConstNode(left.value / right.value)
         if isinstance(left, ConstNode) and left.value == 0:
             return ConstNode(0)
@@ -199,9 +209,12 @@ class DivNode(Node):
 
     def evaluate(self, env: dict) -> float:
         den = self.right.evaluate(env)
+        num = self.left.evaluate(env)
         if den == 0:
-            return float('inf') # Simple handling
-        return self.left.evaluate(env) / den
+            if num == 0:
+                return float('nan')
+            return float('inf') if num > 0 else float('-inf')
+        return num / den
 
     def to_tree(self) -> Tree:
         tree = Tree("[yellow]/[/yellow]")
@@ -219,9 +232,7 @@ class PowNode(Node):
         self.right = right
 
     def differentiate(self, var: str) -> Node:
-        # d/dx (u^v) = u^v * (v' * ln(u) + v * u' / u)
-        # However, for simplicity and common usage (like x^n where n is constant),
-        # we can do a simpler check.
+        # d/dx (u^v)
         if isinstance(self.right, ConstNode):
             # Power rule: n * u^(n-1) * u'
             n = self.right.value
@@ -230,33 +241,26 @@ class PowNode(Node):
                 self.left.differentiate(var)
             )
         else:
-            # Generalized exponential rule
-            # Requires log, which we haven't implemented yet in AST, but we can return unsimplified
-            # For this TUI we'll stick to a simpler approach or implement full rule.
-            # (assuming right node is a constant in most user examples)
-            # We'll just return a placeholder or implement it fully if we add LogNode.
-            pass # We'll stick to constant powers for now, or just implement basic power rule.
-            
-            # Since the scope is simple calculus, let's just assume constant power if it fails.
-            return MulNode(
-                MulNode(self.right, PowNode(self.left, SubNode(self.right, ConstNode(1)))),
-                self.left.differentiate(var)
-            )
+            raise NotImplementedError("Differentiation of variable exponents (like x^x) requires natural logarithm (ln), which is not currently implemented in the AST.")
 
     def simplify(self) -> Node:
         left = self.left.simplify()
         right = self.right.simplify()
 
         if isinstance(left, ConstNode) and isinstance(right, ConstNode):
-            return ConstNode(left.value ** right.value)
+            try:
+                val = left.value ** right.value
+                if isinstance(val, complex) and val.imag == 0:
+                    val = val.real
+                return ConstNode(val)
+            except ZeroDivisionError:
+                pass
         if isinstance(right, ConstNode):
             if right.value == 0:
                 return ConstNode(1)
             if right.value == 1:
                 return left
         if isinstance(left, ConstNode):
-            if left.value == 0:
-                return ConstNode(0)
             if left.value == 1:
                 return ConstNode(1)
 

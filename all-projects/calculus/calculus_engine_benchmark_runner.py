@@ -615,7 +615,12 @@ def main():
     print("=" * 88)
 
     # Save / Update global results JSON
-    global_out_path = Path(__file__).resolve().parent / "benchmark_32_results_oracle_graded.json"
+    if target_engine_name:
+        global_out_name = "benchmark_32_results_multi_test.json"
+    else:
+        global_out_name = "benchmark_32_results_oracle_graded.json"
+        
+    global_out_path = Path(__file__).resolve().parent / global_out_name
     global_data = {}
     if global_out_path.exists():
         try:
