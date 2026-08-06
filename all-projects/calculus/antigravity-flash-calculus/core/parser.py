@@ -5,7 +5,10 @@ import re
 from typing import List, Union
 
 from .ast import (
+    AcosNode,
     AddNode,
+    AsinNode,
+    AtanNode,
     Constant,
     CosNode,
     DivNode,
@@ -33,6 +36,14 @@ class Token:
         return f"Token({self.type}, {self.value})"
 
 
+KNOWN_FUNCS = [
+    "arcsin", "arccos", "arctan",
+    "asin", "acos", "atan",
+    "sin", "cos", "tan",
+    "exp", "sqrt", "ln", "log",
+]
+
+
 def tokenize(expr: str) -> List[Token]:
     """Convert expression string into list of tokens with implicit multiplication handling."""
     # Normalize operators and spaces
@@ -40,7 +51,7 @@ def tokenize(expr: str) -> List[Token]:
 
     token_specification = [
         ("NUMBER", r"\d+(\.\d+)?|\.\d+"),
-        ("FUNC", r"(sin|cos|tan|exp|ln|log|sqrt)\b"),
+        ("FUNC", r"(sin|cos|tan|asin|acos|atan|arcsin|arccos|arctan|exp|ln|log|sqrt)\b"),
         ("VAR", r"[a-zA-Z_][a-zA-Z0-9_]*"),
         ("OP", r"[\+\-\*\/\^]"),
         ("LPAREN", r"\("),
@@ -61,12 +72,25 @@ def tokenize(expr: str) -> List[Token]:
         elif kind == "FUNC":
             raw_tokens.append(Token("FUNC", value))
         elif kind == "VAR":
-            if value.lower() == "pi":
+            v_lower = value.lower()
+            if v_lower == "pi":
                 raw_tokens.append(Token("NUMBER", math.pi))
-            elif value.lower() == "e":
+            elif v_lower == "e":
                 raw_tokens.append(Token("NUMBER", math.e))
             else:
-                raw_tokens.append(Token("VAR", value))
+                matched_func = None
+                for f in KNOWN_FUNCS:
+                    if v_lower.startswith(f) and len(v_lower) > len(f):
+                        matched_func = f
+                        break
+                if matched_func:
+                    rem = value[len(matched_func):]
+                    raw_tokens.append(Token("FUNC", matched_func))
+                    raw_tokens.append(Token("LPAREN", "("))
+                    raw_tokens.extend(tokenize(rem))
+                    raw_tokens.append(Token("RPAREN", ")"))
+                else:
+                    raw_tokens.append(Token("VAR", value))
         elif kind == "OP":
             raw_tokens.append(Token("OP", value))
         elif kind == "LPAREN":
@@ -182,6 +206,12 @@ def parse_expression(expr: str) -> Node:
                 return CosNode(arg)
             elif func_name == "tan":
                 return TanNode(arg)
+            elif func_name in ("asin", "arcsin"):
+                return AsinNode(arg)
+            elif func_name in ("acos", "arccos"):
+                return AcosNode(arg)
+            elif func_name in ("atan", "arctan"):
+                return AtanNode(arg)
             elif func_name == "exp":
                 return ExpNode(arg)
             elif func_name in ("ln", "log"):
@@ -205,3 +235,4 @@ def parse_expression(expr: str) -> Node:
     if pos < len(tokens):
         raise ValueError(f"Extra trailing tokens starting at '{tokens[pos]}'")
     return ast
+

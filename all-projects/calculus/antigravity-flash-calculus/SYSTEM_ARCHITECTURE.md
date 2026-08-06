@@ -40,7 +40,8 @@ flowchart TD
 The parsing pipeline converts raw mathematical expression strings (such as `"x^2 + 3sin(2x)"`) into strongly-typed Abstract Syntax Tree nodes.
 
 1. **Tokenization (`tokenize`)**:
-   - Uses regular expressions in [parser.py](file:///Users/danielward/Developer/Personal%20Projects/Machine%20Learning-AI/python-practice/all-projects/calculus/antigravity-flash-calculus/core/parser.py) to match numbers, variables, operators (`+`, `-`, `*`, `/`, `^`), functions (`sin`, `cos`, `tan`, `exp`, `ln`, `sqrt`), and parentheses.
+   - Uses regular expressions in [parser.py](file:///Users/danielward/Developer/Personal%20Projects/Machine%20Learning-AI/python-practice/all-projects/calculus/antigravity-flash-calculus/core/parser.py) to match numbers, variables, operators (`+`, `-`, `*`, `/`, `^`), functions (`sin`, `cos`, `tan`, `asin`, `acos`, `atan`, `arcsin`, `arccos`, `arctan`, `exp`, `ln`, `sqrt`), and parentheses.
+   - Dynamic function prefix variable splitting: tokens like `cos3x` are automatically expanded to `cos(3*x)`.
    - Automatic constant substitution for $\pi$ (`math.pi`) and $e$ (`math.e`).
 
 2. **Implicit Multiplication Insertion**:
@@ -80,7 +81,9 @@ class Node:
 - **Unary / Function Nodes**:
   - `NegNode`: Unary negation $(-u)' = -u'$.
   - `SinNode`, `CosNode`, `TanNode`: Trigonometric chain rules.
+  - `AsinNode`, `AcosNode`, `AtanNode`: Inverse trigonometric chain rules ($\frac{d}{dx}\arcsin(u) = \frac{u'}{\sqrt{1-u^2}}$, $\frac{d}{dx}\arccos(u) = \frac{-u'}{\sqrt{1-u^2}}$, $\frac{d}{dx}\arctan(u) = \frac{u'}{1+u^2}$).
   - `ExpNode`, `LnNode`, `SqrtNode`: Transcendental function rules.
+
 
 ---
 

@@ -392,3 +392,79 @@ class SqrtNode(Node):
 
     def __eq__(self, other):
         return isinstance(other, SqrtNode) and self.child == other.child
+
+
+class AsinNode(Node):
+    """Arcsine function node asin(child)."""
+
+    precedence = 50
+
+    def __init__(self, child: Node):
+        self.child = child
+
+    def differentiate(self, var: str) -> Node:
+        # d/dx asin(u) = (1 / sqrt(1 - u^2)) * u'
+        denom = SqrtNode(SubNode(Constant(1), PowNode(self.child, Constant(2))))
+        return MulNode(DivNode(Constant(1), denom), self.child.differentiate(var))
+
+    def evaluate(self, var_map: dict) -> float:
+        val = self.child.evaluate(var_map)
+        if val < -1 or val > 1:
+            return float("nan")
+        return math.asin(val)
+
+    def to_string(self, parent_precedence: int = 0) -> str:
+        return f"asin({self.child.to_string(0)})"
+
+    def __eq__(self, other):
+        return isinstance(other, AsinNode) and self.child == other.child
+
+
+class AcosNode(Node):
+    """Arccosine function node acos(child)."""
+
+    precedence = 50
+
+    def __init__(self, child: Node):
+        self.child = child
+
+    def differentiate(self, var: str) -> Node:
+        # d/dx acos(u) = (-1 / sqrt(1 - u^2)) * u'
+        denom = SqrtNode(SubNode(Constant(1), PowNode(self.child, Constant(2))))
+        return MulNode(DivNode(Constant(-1), denom), self.child.differentiate(var))
+
+    def evaluate(self, var_map: dict) -> float:
+        val = self.child.evaluate(var_map)
+        if val < -1 or val > 1:
+            return float("nan")
+        return math.acos(val)
+
+    def to_string(self, parent_precedence: int = 0) -> str:
+        return f"acos({self.child.to_string(0)})"
+
+    def __eq__(self, other):
+        return isinstance(other, AcosNode) and self.child == other.child
+
+
+class AtanNode(Node):
+    """Arctangent function node atan(child)."""
+
+    precedence = 50
+
+    def __init__(self, child: Node):
+        self.child = child
+
+    def differentiate(self, var: str) -> Node:
+        # d/dx atan(u) = (1 / (1 + u^2)) * u'
+        denom = AddNode(Constant(1), PowNode(self.child, Constant(2)))
+        return MulNode(DivNode(Constant(1), denom), self.child.differentiate(var))
+
+    def evaluate(self, var_map: dict) -> float:
+        return math.atan(self.child.evaluate(var_map))
+
+    def to_string(self, parent_precedence: int = 0) -> str:
+        return f"atan({self.child.to_string(0)})"
+
+    def __eq__(self, other):
+        return isinstance(other, AtanNode) and self.child == other.child
+

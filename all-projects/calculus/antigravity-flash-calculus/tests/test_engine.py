@@ -1,8 +1,10 @@
 """Comprehensive unit test suite for calculus core engine and visualizers."""
 
+import math
 import unittest
 from core.ast import Constant, Variable, AddNode, SubNode, MulNode, DivNode, PowNode, SinNode, CosNode
 from core.parser import parse_expression
+
 from core.simplifier import simplify
 from core.differentiator import differentiate_with_steps
 from tui.tree_renderer import render_ast_tree
@@ -105,5 +107,38 @@ class TestTUIComponents(unittest.TestCase):
         self.assertIn("STEP-BY-STEP DERIVATION BREAKDOWN", report)
 
 
+class TestNewFeatures(unittest.TestCase):
+    """Test inverse trig, function prefix splitting, integration, and limits."""
+
+    def test_inverse_trig_differentiation(self):
+        ast = parse_expression("asin(x) + acos(x)")
+        _, simp_d, _ = differentiate_with_steps(ast, "x")
+        # Derivatives cancel out to 0 numerically or symbolically
+        self.assertAlmostEqual(simp_d.evaluate({"x": 0.5}), 0.0, places=5)
+
+    def test_func_prefix_splitting(self):
+        ast = parse_expression("cos3x")
+        _, simp_d, _ = differentiate_with_steps(ast, "x")
+        self.assertAlmostEqual(simp_d.evaluate({"x": 0.0}), 0.0, places=5)
+        self.assertAlmostEqual(simp_d.evaluate({"x": 1.0}), -3.0 * math.sin(3.0), places=5)
+
+    def test_integration(self):
+        from core.integrator import integrate, definite_integrate
+        ast = parse_expression("x^4 - 2*x + 1")
+        antideriv = integrate(ast, "x")
+        self.assertIn("x", str(antideriv))
+        val = definite_integrate(parse_expression("x^2"), "x", 0, 3)
+        self.assertAlmostEqual(val, 9.0, places=4)
+
+    def test_limits(self):
+        from core.limits import limit
+        val1 = limit(parse_expression("sin(x)/x"), "x", 0)
+        self.assertAlmostEqual(val1, 1.0, places=5)
+        val2 = limit(parse_expression("(1 - cos(x))/x^2"), "x", 0)
+        self.assertAlmostEqual(val2, 0.5, places=5)
+
+
 if __name__ == "__main__":
+    import math
     unittest.main()
+

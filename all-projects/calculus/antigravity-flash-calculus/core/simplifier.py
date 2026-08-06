@@ -4,7 +4,10 @@ import math
 from typing import Optional
 
 from .ast import (
+    AcosNode,
     AddNode,
+    AsinNode,
+    AtanNode,
     Constant,
     CosNode,
     DivNode,
@@ -20,6 +23,7 @@ from .ast import (
     TanNode,
     Variable,
 )
+
 
 
 def simplify(node: Node) -> Node:
@@ -239,4 +243,23 @@ def _simplify_pass(node: Node) -> Node:
                 return Constant(int(sq))
         return SqrtNode(child)
 
+    if isinstance(node, AsinNode):
+        child = _simplify_pass(node.child)
+        if isinstance(child, Constant) and child.value == 0:
+            return Constant(0)
+        return AsinNode(child)
+
+    if isinstance(node, AcosNode):
+        child = _simplify_pass(node.child)
+        if isinstance(child, Constant) and child.value == 1:
+            return Constant(0)
+        return AcosNode(child)
+
+    if isinstance(node, AtanNode):
+        child = _simplify_pass(node.child)
+        if isinstance(child, Constant) and child.value == 0:
+            return Constant(0)
+        return AtanNode(child)
+
     return node
+

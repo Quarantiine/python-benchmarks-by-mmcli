@@ -425,21 +425,24 @@ def LIM_FN(s, point):
         "import_block": """
 from core.parser import parse_expression
 from core.differentiator import differentiate_with_steps
+from core.integrator import integrate, definite_integrate
+from core.limits import limit
 
 def DIFF_FN(s):
     _, simp_d, _ = differentiate_with_steps(parse_expression(s), var="x")
     return simp_d
 
 def INT_FN(s):
-    raise NotImplementedError("not implemented in this build")
+    return integrate(parse_expression(s), var="x")
 
 def DEFINT_FN(s, lo, hi):
-    raise NotImplementedError("not implemented in this build")
+    return definite_integrate(parse_expression(s), var="x", lower=lo, upper=hi)
 
 def LIM_FN(s, point):
-    raise NotImplementedError("not implemented in this build")
+    return limit(parse_expression(s), var="x", point=point)
 """,
     },
+
     {
         "name": "antigravity-opus-calculus",
         "title": "antigravity-opus (Claude Opus 4.6)",
