@@ -1,7 +1,8 @@
 import re
 from math_ast import (
     Node, ConstNode, VarNode, AddNode, SubNode,
-    MulNode, DivNode, PowNode, SinNode, CosNode
+    MulNode, DivNode, PowNode, SinNode, CosNode,
+    TanNode, AsinNode, AcosNode, ExpNode, LnNode, SqrtNode
 )
 
 class ParseError(Exception):
@@ -10,8 +11,8 @@ class ParseError(Exception):
 def tokenize(text: str):
     token_specification = [
         ('NUMBER',   r'\d+(\.\d*)?'),  # Integer or decimal number
-        ('FUNC',     r'sin|cos'),      # Functions
-        ('VAR',      r'[a-zA-Z_]\w*'), # Identifiers (variables)
+        ('FUNC',     r'sin|cos|tan|asin|acos|exp|ln|sqrt'),      # Functions
+        ('VAR',      r'[a-zA-Z_][a-zA-Z0-9_]*'), # Identifiers (variables)
         ('OP',       r'[+\-*/^()]'),   # Operators
         ('SKIP',     r'[ \t]+'),       # Skip over spaces and tabs
         ('MISMATCH', r'.'),            # Any other character
@@ -73,11 +74,11 @@ class Parser:
         return node
 
     def term(self) -> Node:
-        node = self.factor()
+        node = self.unary()
         while True:
             op = self.match('OP', '*') or self.match('OP', '/')
             if op:
-                right = self.factor()
+                right = self.unary()
                 if op == '*':
                     node = MulNode(node, right)
                 else:
@@ -86,21 +87,26 @@ class Parser:
                 break
         return node
 
+    def unary(self) -> Node:
+        if self.match('OP', '-'):
+            return MulNode(ConstNode(-1), self.unary())
+        if self.match('OP', '+'):
+            return self.unary()
+        return self.factor()
+
     def factor(self) -> Node:
         node = self.base()
         while True:
             op = self.match('OP', '^')
             if op:
-                right = self.factor() # ^ is right-associative usually, so we call factor()
+                right = self.unary()
                 node = PowNode(node, right)
             else:
                 break
         return node
 
     def base(self) -> Node:
-        # Check for unary minus
-        if self.match('OP', '-'):
-            return MulNode(ConstNode(-1), self.base())
+
 
         if self.match('OP', '('):
             node = self.expr()
@@ -116,6 +122,18 @@ class Parser:
                 return SinNode(inner)
             elif func == 'cos':
                 return CosNode(inner)
+            elif func == 'tan':
+                return TanNode(inner)
+            elif func == 'asin':
+                return AsinNode(inner)
+            elif func == 'acos':
+                return AcosNode(inner)
+            elif func == 'exp':
+                return ExpNode(inner)
+            elif func == 'ln':
+                return LnNode(inner)
+            elif func == 'sqrt':
+                return SqrtNode(inner)
 
         num = self.match('NUMBER')
         if num:

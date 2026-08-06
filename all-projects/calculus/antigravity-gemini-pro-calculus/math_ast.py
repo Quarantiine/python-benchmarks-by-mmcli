@@ -233,15 +233,22 @@ class PowNode(Node):
 
     def differentiate(self, var: str) -> Node:
         # d/dx (u^v)
-        if isinstance(self.right, ConstNode):
+        v_prime = self.right.differentiate(var).simplify()
+        if isinstance(v_prime, ConstNode) and v_prime.value == 0:
             # Power rule: n * u^(n-1) * u'
-            n = self.right.value
             return MulNode(
-                MulNode(ConstNode(n), PowNode(self.left, ConstNode(n - 1))),
+                MulNode(self.right, PowNode(self.left, SubNode(self.right, ConstNode(1)))),
                 self.left.differentiate(var)
             )
         else:
-            raise NotImplementedError("Differentiation of variable exponents (like x^x) requires natural logarithm (ln), which is not currently implemented in the AST.")
+            # General rule: u^v * (v' * ln(u) + v * u' / u)
+            return MulNode(
+                PowNode(self.left, self.right),
+                AddNode(
+                    MulNode(v_prime, LnNode(self.left)),
+                    MulNode(self.right, DivNode(self.left.differentiate(var), self.left))
+                )
+            )
 
     def simplify(self) -> Node:
         left = self.left.simplify()
@@ -336,3 +343,170 @@ class CosNode(Node):
     def __str__(self) -> str:
         return f"cos({self.inner})"
 
+
+class TanNode(Node):
+    def __init__(self, inner: Node):
+        self.inner = inner
+
+    def differentiate(self, var: str) -> Node:
+        # Chain rule: sec^2(u) * u' -> (tan^2(u) + 1) * u'
+        return MulNode(
+            AddNode(PowNode(TanNode(self.inner), ConstNode(2)), ConstNode(1)),
+            self.inner.differentiate(var)
+        )
+
+    def simplify(self) -> Node:
+        inner = self.inner.simplify()
+        if isinstance(inner, ConstNode):
+            return ConstNode(math.tan(inner.value))
+        return TanNode(inner)
+
+    def evaluate(self, env: dict) -> float:
+        return math.tan(self.inner.evaluate(env))
+
+    def to_tree(self) -> Tree:
+        tree = Tree("[magenta]tan[/magenta]")
+        tree.add(self.inner.to_tree())
+        return tree
+
+    def __str__(self) -> str:
+        return f"tan({self.inner})"
+
+
+class AsinNode(Node):
+    def __init__(self, inner: Node):
+        self.inner = inner
+
+    def differentiate(self, var: str) -> Node:
+        # Chain rule: u' / sqrt(1 - u^2)
+        return DivNode(
+            self.inner.differentiate(var),
+            SqrtNode(SubNode(ConstNode(1), PowNode(self.inner, ConstNode(2))))
+        )
+
+    def simplify(self) -> Node:
+        inner = self.inner.simplify()
+        if isinstance(inner, ConstNode):
+            return ConstNode(math.asin(inner.value))
+        return AsinNode(inner)
+
+    def evaluate(self, env: dict) -> float:
+        return math.asin(self.inner.evaluate(env))
+
+    def to_tree(self) -> Tree:
+        tree = Tree("[magenta]asin[/magenta]")
+        tree.add(self.inner.to_tree())
+        return tree
+
+    def __str__(self) -> str:
+        return f"asin({self.inner})"
+
+
+class AcosNode(Node):
+    def __init__(self, inner: Node):
+        self.inner = inner
+
+    def differentiate(self, var: str) -> Node:
+        # Chain rule: -u' / sqrt(1 - u^2)
+        return DivNode(
+            MulNode(ConstNode(-1), self.inner.differentiate(var)),
+            SqrtNode(SubNode(ConstNode(1), PowNode(self.inner, ConstNode(2))))
+        )
+
+    def simplify(self) -> Node:
+        inner = self.inner.simplify()
+        if isinstance(inner, ConstNode):
+            return ConstNode(math.acos(inner.value))
+        return AcosNode(inner)
+
+    def evaluate(self, env: dict) -> float:
+        return math.acos(self.inner.evaluate(env))
+
+    def to_tree(self) -> Tree:
+        tree = Tree("[magenta]acos[/magenta]")
+        tree.add(self.inner.to_tree())
+        return tree
+
+    def __str__(self) -> str:
+        return f"acos({self.inner})"
+
+
+class ExpNode(Node):
+    def __init__(self, inner: Node):
+        self.inner = inner
+
+    def differentiate(self, var: str) -> Node:
+        # Chain rule: exp(u) * u'
+        return MulNode(ExpNode(self.inner), self.inner.differentiate(var))
+
+    def simplify(self) -> Node:
+        inner = self.inner.simplify()
+        if isinstance(inner, ConstNode):
+            return ConstNode(math.exp(inner.value))
+        return ExpNode(inner)
+
+    def evaluate(self, env: dict) -> float:
+        return math.exp(self.inner.evaluate(env))
+
+    def to_tree(self) -> Tree:
+        tree = Tree("[magenta]exp[/magenta]")
+        tree.add(self.inner.to_tree())
+        return tree
+
+    def __str__(self) -> str:
+        return f"exp({self.inner})"
+
+
+class LnNode(Node):
+    def __init__(self, inner: Node):
+        self.inner = inner
+
+    def differentiate(self, var: str) -> Node:
+        # Chain rule: u' / u
+        return DivNode(self.inner.differentiate(var), self.inner)
+
+    def simplify(self) -> Node:
+        inner = self.inner.simplify()
+        if isinstance(inner, ConstNode):
+            return ConstNode(math.log(inner.value))
+        return LnNode(inner)
+
+    def evaluate(self, env: dict) -> float:
+        return math.log(self.inner.evaluate(env))
+
+    def to_tree(self) -> Tree:
+        tree = Tree("[magenta]ln[/magenta]")
+        tree.add(self.inner.to_tree())
+        return tree
+
+    def __str__(self) -> str:
+        return f"ln({self.inner})"
+
+
+class SqrtNode(Node):
+    def __init__(self, inner: Node):
+        self.inner = inner
+
+    def differentiate(self, var: str) -> Node:
+        # Chain rule: u' / (2 * sqrt(u))
+        return DivNode(
+            self.inner.differentiate(var),
+            MulNode(ConstNode(2), SqrtNode(self.inner))
+        )
+
+    def simplify(self) -> Node:
+        inner = self.inner.simplify()
+        if isinstance(inner, ConstNode):
+            return ConstNode(math.sqrt(inner.value))
+        return SqrtNode(inner)
+
+    def evaluate(self, env: dict) -> float:
+        return math.sqrt(self.inner.evaluate(env))
+
+    def to_tree(self) -> Tree:
+        tree = Tree("[magenta]sqrt[/magenta]")
+        tree.add(self.inner.to_tree())
+        return tree
+
+    def __str__(self) -> str:
+        return f"sqrt({self.inner})"
