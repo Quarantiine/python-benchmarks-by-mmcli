@@ -25,7 +25,9 @@ python3 __main__.py
 | **Step-by-Step Derivation** | Shows the rule applied, raw derivative, and simplified result |
 | **ASCII Function Graphing** | Plots f(x) with Unicode axes, y-labels, and percentile-based outlier clipping |
 | **Implicit Multiplication** | Write `2x`, `2sin(x)`, `2(x+1)` naturally |
+| **Unicode Superscripts** | `x²`, `x³` are automatically converted to `x^2`, `x^3` |
 | **Built-in Constants** | `pi` (π) and `e` (Euler's number) are recognized automatically |
+| **Inverse Trig & Radicals** | `asin`, `acos`, `atan`, `sqrt` with full chain rule support |
 
 ---
 
@@ -55,7 +57,10 @@ cos(x) / (x + 1)      → Quotient rule
 tan(x)                → sec²(x) via chain rule
 ln(x^2 + 1)           → Chain rule (logarithmic)
 exp(-x^2)             → Chain rule (exponential)
+sqrt(x^2 + 1)         → Chain rule (radical)
+asin(x) + acos(x)     → Inverse trig derivative
 2x                    → Implicit multiplication
+x² + sin(x)           → Unicode superscript support
 ```
 
 ---
@@ -63,6 +68,8 @@ exp(-x^2)             → Chain rule (exponential)
 ## Supported Functions
 
 - `sin(x)`, `cos(x)`, `tan(x)`
+- `asin(x)`, `acos(x)`, `atan(x)` — inverse trigonometric
+- `sqrt(x)` — square root
 - `ln(x)` — natural logarithm
 - `exp(x)` — exponential function
 

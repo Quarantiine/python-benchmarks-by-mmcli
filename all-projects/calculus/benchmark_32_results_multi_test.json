@@ -1,334 +1,500 @@
 {
-  "antigravity-flash-calculus": {
-    "title": "antigravity-flash (Gemini 3.6 Flash)",
-    "time": 0.04517984390258789,
-    "results": [
-      {
-        "id": 1,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 2,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 3,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 4,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 5,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 6,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 7,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 8,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 9,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 10,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 11,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 12,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 13,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 14,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 15,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 16,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 17,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 18,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 19,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 20,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 21,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 22,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 23,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 24,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 25,
-        "status": "PASS",
-        "reason": "Antiderivative differentiates back to the original"
-      },
-      {
-        "id": 26,
-        "status": "PASS",
-        "reason": "9.000000000000005 ~= 9.0"
-      },
-      {
-        "id": 27,
-        "status": "PASS",
-        "reason": "0.9999999983333334 ~= 1.0"
-      },
-      {
-        "id": 28,
-        "status": "PASS",
-        "reason": "0.4999999969612645 ~= 0.5"
-      },
-      {
-        "id": 29,
-        "status": "PASS",
-        "reason": "Clean rejection: ValueError: Unexpected character in expression: \u00b2"
-      },
-      {
-        "id": 30,
-        "status": "PASS",
-        "reason": "Correctly parsed and differentiated"
-      },
-      {
-        "id": 31,
-        "status": "PASS",
-        "reason": "Clean syntax error raised"
-      },
-      {
-        "id": 32,
-        "status": "PASS",
-        "reason": "Clean syntax error raised"
-      }
-    ]
-  },
-  "antigravity-gemini-pro-calculus": {
-    "title": "antigravity-gemini-pro (Gemini 3.1 Pro)",
-    "time": 0.06438112258911133,
-    "results": [
-      {
-        "id": 1,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 2,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 3,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 4,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 5,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 6,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 7,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 8,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 9,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 10,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 11,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 12,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 13,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 14,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 15,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 16,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 17,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 18,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 19,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 20,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 21,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 22,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 23,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 24,
-        "status": "PASS",
-        "reason": "Matches oracle derivative"
-      },
-      {
-        "id": 25,
-        "status": "FAIL",
-        "reason": "Raised unexpectedly: NotImplementedError: not implemented in this build"
-      },
-      {
-        "id": 26,
-        "status": "FAIL",
-        "reason": "Raised unexpectedly: NotImplementedError: not implemented in this build"
-      },
-      {
-        "id": 27,
-        "status": "FAIL",
-        "reason": "Raised unexpectedly: NotImplementedError: not implemented in this build"
-      },
-      {
-        "id": 28,
-        "status": "FAIL",
-        "reason": "Raised unexpectedly: NotImplementedError: not implemented in this build"
-      },
-      {
-        "id": 29,
-        "status": "PASS",
-        "reason": "Clean rejection: ParseError: Unexpected character '\u00b2'"
-      },
-      {
-        "id": 30,
-        "status": "PASS",
-        "reason": "Clean rejection: ParseError: Expected OP((), got NUMBER('3')"
-      },
-      {
-        "id": 31,
-        "status": "PASS",
-        "reason": "Clean syntax error raised"
-      },
-      {
-        "id": 32,
-        "status": "PASS",
-        "reason": "Clean syntax error raised"
-      }
-    ]
-  }
+	"antigravity-flash-calculus": {
+		"title": "antigravity-flash (Gemini 3.6 Flash)",
+		"time": 0.04517984390258789,
+		"results": [
+			{
+				"id": 1,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 2,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 3,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 4,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 5,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 6,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 7,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 8,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 9,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 10,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 11,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 12,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 13,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 14,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 15,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 16,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 17,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 18,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 19,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 20,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 21,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 22,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 23,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 24,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 25,
+				"status": "PASS",
+				"reason": "Antiderivative differentiates back to the original"
+			},
+			{
+				"id": 26,
+				"status": "PASS",
+				"reason": "9.000000000000005 ~= 9.0"
+			},
+			{
+				"id": 27,
+				"status": "PASS",
+				"reason": "0.9999999983333334 ~= 1.0"
+			},
+			{
+				"id": 28,
+				"status": "PASS",
+				"reason": "0.4999999969612645 ~= 0.5"
+			},
+			{
+				"id": 29,
+				"status": "PASS",
+				"reason": "Clean rejection: ValueError: Unexpected character in expression: \u00b2"
+			},
+			{
+				"id": 30,
+				"status": "PASS",
+				"reason": "Correctly parsed and differentiated"
+			},
+			{
+				"id": 31,
+				"status": "PASS",
+				"reason": "Clean syntax error raised"
+			},
+			{
+				"id": 32,
+				"status": "PASS",
+				"reason": "Clean syntax error raised"
+			}
+		]
+	},
+	"antigravity-gemini-pro-calculus": {
+		"title": "antigravity-gemini-pro (Gemini 3.1 Pro)",
+		"time": 0.06438112258911133,
+		"results": [
+			{
+				"id": 1,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 2,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 3,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 4,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 5,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 6,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 7,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 8,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 9,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 10,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 11,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 12,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 13,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 14,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 15,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 16,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 17,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 18,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 19,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 20,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 21,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 22,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 23,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 24,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 25,
+				"status": "FAIL",
+				"reason": "Raised unexpectedly: NotImplementedError: not implemented in this build"
+			},
+			{
+				"id": 26,
+				"status": "FAIL",
+				"reason": "Raised unexpectedly: NotImplementedError: not implemented in this build"
+			},
+			{
+				"id": 27,
+				"status": "FAIL",
+				"reason": "Raised unexpectedly: NotImplementedError: not implemented in this build"
+			},
+			{
+				"id": 28,
+				"status": "FAIL",
+				"reason": "Raised unexpectedly: NotImplementedError: not implemented in this build"
+			},
+			{
+				"id": 29,
+				"status": "PASS",
+				"reason": "Clean rejection: ParseError: Unexpected character '\u00b2'"
+			},
+			{
+				"id": 30,
+				"status": "PASS",
+				"reason": "Clean rejection: ParseError: Expected OP((), got NUMBER('3')"
+			},
+			{
+				"id": 31,
+				"status": "PASS",
+				"reason": "Clean syntax error raised"
+			},
+			{
+				"id": 32,
+				"status": "PASS",
+				"reason": "Clean syntax error raised"
+			}
+		]
+	},
+	"antigravity-opus-calculus": {
+		"title": "antigravity-opus (Claude Opus 4.6)",
+		"time": 0.03176403045654297,
+		"results": [
+			{
+				"id": 1,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 2,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 3,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 4,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 5,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 6,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 7,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 8,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 9,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 10,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 11,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 12,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 13,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 14,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 15,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 16,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 17,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 18,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 19,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 20,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 21,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 22,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 23,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 24,
+				"status": "PASS",
+				"reason": "Matches oracle derivative"
+			},
+			{
+				"id": 25,
+				"status": "PASS",
+				"reason": "Antiderivative differentiates back to the original"
+			},
+			{
+				"id": 26,
+				"status": "PASS",
+				"reason": "9.0 ~= 9.0"
+			},
+			{
+				"id": 27,
+				"status": "PASS",
+				"reason": "0.9999999999998334 ~= 1.0"
+			},
+			{
+				"id": 28,
+				"status": "PASS",
+				"reason": "0.5000000413701854 ~= 0.5"
+			},
+			{
+				"id": 29,
+				"status": "PASS",
+				"reason": "Correctly parsed and differentiated"
+			},
+			{
+				"id": 30,
+				"status": "PASS",
+				"reason": "Clean rejection: ParseError: Function 'cos' requires parenthesised argument, e.g. cos(x)"
+			},
+			{
+				"id": 31,
+				"status": "PASS",
+				"reason": "Clean syntax error raised"
+			},
+			{
+				"id": 32,
+				"status": "PASS",
+				"reason": "Clean syntax error raised"
+			}
+		]
+	}
 }

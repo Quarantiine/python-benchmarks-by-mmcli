@@ -423,3 +423,86 @@ class Exp(_UnaryFunc):
             return math.exp(self.arg.evaluate(env))
         except OverflowError:
             return float("inf")
+
+
+class Sqrt(_UnaryFunc):
+    func_name = "sqrt"
+
+    def differentiate(self, var):
+        # Chain rule: d/dx[sqrt(u)] = u' / (2 · sqrt(u))
+        return Mul(
+            Div(Const(1), Mul(Const(2), Sqrt(self.arg))),
+            self.arg.differentiate(var),
+        )
+
+    def simplify(self):
+        a = self.arg.simplify()
+        if isinstance(a, Const) and a.value >= 0:
+            return Const(math.sqrt(a.value))
+        return Sqrt(a)
+
+    def evaluate(self, env):
+        val = self.arg.evaluate(env)
+        if val < 0:
+            return float("nan")
+        return math.sqrt(val)
+
+
+class Asin(_UnaryFunc):
+    func_name = "asin"
+
+    def differentiate(self, var):
+        # Chain rule: d/dx[asin(u)] = u' / sqrt(1 − u²)
+        return Mul(
+            Div(Const(1), Sqrt(Sub(Const(1), Pow(self.arg, Const(2))))),
+            self.arg.differentiate(var),
+        )
+
+    def simplify(self):
+        a = self.arg.simplify()
+        if isinstance(a, Const) and -1 <= a.value <= 1:
+            return Const(math.asin(a.value))
+        return Asin(a)
+
+    def evaluate(self, env):
+        return math.asin(self.arg.evaluate(env))
+
+
+class Acos(_UnaryFunc):
+    func_name = "acos"
+
+    def differentiate(self, var):
+        # Chain rule: d/dx[acos(u)] = −u' / sqrt(1 − u²)
+        return Mul(
+            Mul(Const(-1), Div(Const(1), Sqrt(Sub(Const(1), Pow(self.arg, Const(2)))))),
+            self.arg.differentiate(var),
+        )
+
+    def simplify(self):
+        a = self.arg.simplify()
+        if isinstance(a, Const) and -1 <= a.value <= 1:
+            return Const(math.acos(a.value))
+        return Acos(a)
+
+    def evaluate(self, env):
+        return math.acos(self.arg.evaluate(env))
+
+
+class Atan(_UnaryFunc):
+    func_name = "atan"
+
+    def differentiate(self, var):
+        # Chain rule: d/dx[atan(u)] = u' / (1 + u²)
+        return Mul(
+            Div(Const(1), Add(Const(1), Pow(self.arg, Const(2)))),
+            self.arg.differentiate(var),
+        )
+
+    def simplify(self):
+        a = self.arg.simplify()
+        if isinstance(a, Const):
+            return Const(math.atan(a.value))
+        return Atan(a)
+
+    def evaluate(self, env):
+        return math.atan(self.arg.evaluate(env))

@@ -24,10 +24,12 @@ Character-by-character scanning classifies input into typed tokens:
 | :--------- | :---------------------- | :----------------------------- |
 | `NUM`      | `42`, `3.14`, `pi`, `e` | Numeric literals and constants |
 | `VAR`      | `x`, `y`, `theta`       | Variable identifiers           |
-| `FUNC`     | `sin`, `cos`, `ln`      | Recognized function names      |
+| `FUNC`     | `sin`, `cos`, `sqrt`, `asin` | Recognized function names      |
 | `OP`       | `+`, `-`, `^`, `(`      | Operators and delimiters       |
 
 Constants `pi` and `e` are resolved to numeric values at tokenization time.
+
+Unicode superscripts (`²`, `³`, etc.) are automatically converted to `^` + digit tokens, so `x²` is parsed identically to `x^2`.
 
 ### Implicit Multiplication
 
@@ -46,12 +48,14 @@ Implements standard mathematical precedence via mutually recursive functions:
 
 ```
 expr   → term (('+' | '-') term)*           ← lowest precedence
-term   → power (('*' | '/') power)*
-power  → unary ('^' power)?                 ← right-associative
-unary  → '-' unary | call
-call   → FUNC '(' expr ')' | atom
+term   → unary (('*' | '/') unary)*
+unary  → '-' unary | power                  ← -x^2 = -(x^2)
+power  → call ('^' power)?                  ← right-associative
+call   → FUNC '(' expr ')' | atom           ← requires parentheses
 atom   → NUMBER | VARIABLE | '(' expr ')'   ← highest precedence
 ```
+
+> **Note:** Unary minus binds less tightly than exponentiation, so `-x^2` correctly parses as `-(x²)`, not `(-x)²`. Bare function names without parentheses (e.g., `cos3x`) raise a `ParseError`.
 
 ---
 
@@ -73,9 +77,9 @@ Every expression is represented as a tree of `Expr` node objects:
 
 | Category        | Nodes                             | Slots           |
 | :-------------- | :-------------------------------- | :-------------- |
-| **Leaves**      | `Const(value)`, `Var(name)`       | Single value    |
-| **Binary Ops**  | `Add`, `Sub`, `Mul`, `Div`, `Pow` | `left`, `right` |
-| **Unary Funcs** | `Sin`, `Cos`, `Tan`, `Ln`, `Exp`  | `arg`           |
+| **Leaves**      | `Const(value)`, `Var(name)`                         | Single value    |
+| **Binary Ops**  | `Add`, `Sub`, `Mul`, `Div`, `Pow`                   | `left`, `right` |
+| **Unary Funcs** | `Sin`, `Cos`, `Tan`, `Ln`, `Exp`, `Sqrt`, `Asin`, `Acos`, `Atan` | `arg`           |
 
 ### Differentiation Rules
 
@@ -96,6 +100,10 @@ Each node implements `differentiate(var)` returning a new AST:
 | `Tan(u)`   | **Chain Rule**    | sec²(u)·u'                |
 | `Ln(u)`    | **Chain Rule**    | u'/u                      |
 | `Exp(u)`   | **Chain Rule**    | exp(u)·u'                 |
+| `Sqrt(u)`  | **Chain Rule**    | u'/(2·sqrt(u))            |
+| `Asin(u)`  | **Chain Rule**    | u'/sqrt(1−u²)            |
+| `Acos(u)`  | **Chain Rule**    | −u'/sqrt(1−u²)           |
+| `Atan(u)`  | **Chain Rule**    | u'/(1+u²)                |
 
 ### Simplification
 

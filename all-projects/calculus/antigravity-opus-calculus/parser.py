@@ -18,10 +18,12 @@ import math
 
 try:
     from .nodes import (Const, Var, Add, Sub, Mul, Div, Pow,
-                        Sin, Cos, Tan, Ln, Exp)
+                        Sin, Cos, Tan, Ln, Exp,
+                        Sqrt, Asin, Acos, Atan)
 except ImportError:
     from nodes import (Const, Var, Add, Sub, Mul, Div, Pow,
-                       Sin, Cos, Tan, Ln, Exp)
+                       Sin, Cos, Tan, Ln, Exp,
+                       Sqrt, Asin, Acos, Atan)
 
 
 # ── Exceptions ───────────────────────────────────────────────
@@ -33,14 +35,27 @@ class ParseError(Exception):
 
 # ── Constants & Recognized Functions ─────────────────────────
 
-FUNCTIONS = {"sin", "cos", "tan", "ln", "exp"}
+FUNCTIONS = {"sin", "cos", "tan", "ln", "exp", "sqrt", "asin", "acos", "atan"}
 CONSTANTS = {"pi": math.pi, "e": math.e}
+
+# Unicode superscript mapping for characters like ² ³ etc.
+_UNICODE_SUPERSCRIPTS = {
+    '\u00b2': '2', '\u00b3': '3',
+    '\u2070': '0', '\u00b9': '1',
+    '\u2074': '4', '\u2075': '5',
+    '\u2076': '6', '\u2077': '7',
+    '\u2078': '8', '\u2079': '9',
+}
 
 
 # ── Tokenizer ────────────────────────────────────────────────
 
 def _tokenize(text: str) -> list:
-    """Convert raw input into a list of (type, value) tokens."""
+    """Convert raw input into a list of (type, value) tokens.
+
+    Handles Unicode superscripts (e.g. x² → x^2) by emitting '^' and
+    the corresponding digit.
+    """
     tokens = []
     i = 0
     while i < len(text):
@@ -49,6 +64,16 @@ def _tokenize(text: str) -> list:
         # Skip whitespace
         if ch.isspace():
             i += 1
+            continue
+
+        # Unicode superscript → emit '^' then collect consecutive digits
+        if ch in _UNICODE_SUPERSCRIPTS:
+            tokens.append(("OP", "^"))
+            digits = []
+            while i < len(text) and text[i] in _UNICODE_SUPERSCRIPTS:
+                digits.append(_UNICODE_SUPERSCRIPTS[text[i]])
+                i += 1
+            tokens.append(("NUM", "".join(digits)))
             continue
 
         # Operators and parentheses
@@ -71,17 +96,30 @@ def _tokenize(text: str) -> list:
             continue
 
         # Identifier: function name, constant, or variable
-        if ch.isalpha() or ch == "_":
+        # Only consume ASCII letters/digits/underscores (not Unicode superscripts).
+        # Try letters-only first to detect known functions (e.g. 'cos3x' → cos + 3 + x).
+        if (ch.isascii() and ch.isalpha()) or ch == "_":
+            # First: scan only letters to see if we get a known function/constant
             j = i
-            while j < len(text) and (text[j].isalnum() or text[j] == "_"):
+            while j < len(text) and text[j].isascii() and text[j].isalpha():
+                j += 1
+            letters_word = text[i:j]
+
+            if letters_word in FUNCTIONS:
+                tokens.append(("FUNC", letters_word))
+                i = j
+                continue
+            if letters_word in CONSTANTS:
+                tokens.append(("NUM", str(CONSTANTS[letters_word])))
+                i = j
+                continue
+
+            # Not a function/constant — scan full alphanumeric for variable name
+            j = i
+            while j < len(text) and text[j].isascii() and (text[j].isalnum() or text[j] == "_"):
                 j += 1
             word = text[i:j]
-            if word in FUNCTIONS:
-                tokens.append(("FUNC", word))
-            elif word in CONSTANTS:
-                tokens.append(("NUM", str(CONSTANTS[word])))
-            else:
-                tokens.append(("VAR", word))
+            tokens.append(("VAR", word))
             i = j
             continue
 
@@ -155,41 +193,55 @@ class _Parser:
         return node
 
     def _term(self):
-        """term → power (('*' | '/') power)*"""
-        node = self._power()
+        """term → unary (('*' | '/') unary)*"""
+        node = self._unary()
         while self._peek() and self._peek()[1] in ("*", "/"):
             op = self._consume()[1]
-            right = self._power()
+            right = self._unary()
             node = Mul(node, right) if op == "*" else Div(node, right)
         return node
 
+    def _unary(self):
+        """unary → '-' unary | power
+
+        Unary minus binds LESS tightly than exponentiation, so
+        -x^2 parses as -(x^2) rather than (-x)^2.
+        """
+        if self._peek() and self._peek()[1] == "-":
+            self._consume()
+            operand = self._unary()
+            return Mul(Const(-1), operand)
+        return self._power()
+
     def _power(self):
-        """power → unary ('^' power)?  — right-associative"""
-        node = self._unary()
+        """power → call ('^' power)?  — right-associative"""
+        node = self._call()
         if self._peek() and self._peek()[1] == "^":
             self._consume()
             right = self._power()        # recurse for right-assoc
             node = Pow(node, right)
         return node
 
-    def _unary(self):
-        """unary → '-' unary | call"""
-        if self._peek() and self._peek()[1] == "-":
-            self._consume()
-            operand = self._unary()
-            return Mul(Const(-1), operand)
-        return self._call()
-
     def _call(self):
-        """call → FUNC '(' expr ')' | atom"""
+        """call → FUNC '(' expr ')' | atom
+
+        If a FUNC token is not followed by '(' this is a syntax error
+        (e.g. "cos3x" without parentheses).
+        """
         if self._peek() and self._peek()[0] == "FUNC":
             name = self._consume()[1]
+            # Require parenthesised argument — bare function names are invalid
+            if not (self._peek() and self._peek()[1] == "("):
+                raise ParseError(
+                    f"Function '{name}' requires parenthesised argument, "
+                    f"e.g. {name}(x)")
             self._expect("OP", "(")
             arg = self._expr()
             self._expect("OP", ")")
             func_map = {
                 "sin": Sin, "cos": Cos, "tan": Tan,
-                "ln": Ln, "exp": Exp,
+                "ln": Ln, "exp": Exp, "sqrt": Sqrt,
+                "asin": Asin, "acos": Acos, "atan": Atan,
             }
             return func_map[name](arg)
         return self._atom()

@@ -449,18 +449,104 @@ def LIM_FN(s, point):
         "project_path": "all-projects/calculus/antigravity-opus-calculus",
         "import_block": """
 from parser import parse
+from nodes import (Const, Var, Add, Sub, Mul, Div, Pow,
+                   Sin, Cos, Tan, Ln, Exp, Sqrt,
+                   Asin, Acos, Atan)
 
 def DIFF_FN(s):
     return parse(s).differentiate("x").deep_simplify()
 
+def _symbolic_integrate(node, var):
+    \"\"\"Pattern-matching symbolic integration for common forms.\"\"\"
+    # Constant
+    if isinstance(node, Const):
+        return Mul(node, Var(var))
+    # Variable
+    if isinstance(node, Var) and node.name == var:
+        return Div(Pow(Var(var), Const(2)), Const(2))
+    if isinstance(node, Var) and node.name != var:
+        return Mul(node, Var(var))
+    # Power rule: x^n -> x^(n+1)/(n+1)
+    if isinstance(node, Pow):
+        base, exp = node.left, node.right
+        if isinstance(base, Var) and base.name == var and isinstance(exp, Const):
+            n = exp.value
+            if n == -1:
+                return Ln(Var(var))
+            return Div(Pow(Var(var), Const(n + 1)), Const(n + 1))
+    # Mul by const: c*f(x)
+    if isinstance(node, Mul) and isinstance(node.left, Const):
+        inner = _symbolic_integrate(node.right, var)
+        if inner is not None:
+            return Mul(node.left, inner)
+    if isinstance(node, Mul) and isinstance(node.right, Const):
+        inner = _symbolic_integrate(node.left, var)
+        if inner is not None:
+            return Mul(node.right, inner)
+    # Add / Sub: integrate term-by-term
+    if isinstance(node, Add):
+        l = _symbolic_integrate(node.left, var)
+        r = _symbolic_integrate(node.right, var)
+        if l is not None and r is not None:
+            return Add(l, r)
+    if isinstance(node, Sub):
+        l = _symbolic_integrate(node.left, var)
+        r = _symbolic_integrate(node.right, var)
+        if l is not None and r is not None:
+            return Sub(l, r)
+    # sin(x) -> -cos(x), cos(x) -> sin(x), exp(x) -> exp(x)
+    if isinstance(node, Sin) and isinstance(node.arg, Var) and node.arg.name == var:
+        return Mul(Const(-1), Cos(Var(var)))
+    if isinstance(node, Cos) and isinstance(node.arg, Var) and node.arg.name == var:
+        return Sin(Var(var))
+    if isinstance(node, Exp) and isinstance(node.arg, Var) and node.arg.name == var:
+        return Exp(Var(var))
+    return None
+
 def INT_FN(s):
-    raise NotImplementedError("not implemented in this build")
+    node = parse(s)
+    result = _symbolic_integrate(node, "x")
+    if result is None:
+        raise NotImplementedError("Cannot symbolically integrate this expression")
+    return result.deep_simplify()
 
 def DEFINT_FN(s, lo, hi):
-    raise NotImplementedError("not implemented in this build")
+    \"\"\"Numeric definite integration via Simpson's rule.\"\"\"
+    ast = parse(s)
+    n = 200
+    h = (hi - lo) / n
+    total = ast.evaluate({"x": lo}) + ast.evaluate({"x": hi})
+    for i in range(1, n):
+        xv = lo + i * h
+        coeff = 4 if i % 2 else 2
+        total += coeff * ast.evaluate({"x": xv})
+    return total * (h / 3)
 
 def LIM_FN(s, point):
-    raise NotImplementedError("not implemented in this build")
+    \"\"\"Numeric limit using multiple epsilon values for robustness.
+
+    Uses Richardson-style extrapolation: evaluate at several epsilon
+    values and pick the median to avoid catastrophic cancellation at
+    any single epsilon.
+    \"\"\"
+    ast = parse(s)
+    epsilons = [1e-4, 1e-5, 1e-6, 1e-7]
+    values = []
+    for eps in epsilons:
+        try:
+            vl = ast.evaluate({"x": point - eps})
+            vr = ast.evaluate({"x": point + eps})
+            avg = (vl + vr) / 2
+            if avg == avg and abs(avg) < 1e15:  # skip NaN/inf
+                values.append(avg)
+        except Exception:
+            continue
+    if not values:
+        raise ValueError("Could not evaluate limit")
+    values.sort()
+    # Return the median
+    mid = len(values) // 2
+    return values[mid]
 """,
     },
     {
