@@ -139,11 +139,68 @@ antigravity-gemini-pro (Gemini 3.1 Pro)   | 11/32 (34.4%) |  11/28 (39.3%) |    
      - **`mmcli-flash-lite`** was the **only engine** in the entire benchmark to pass **Case 7** (`asin(x)+acos(x)` with full `asin`/`acos`/`atan` node support). However, it missed **Case 29** by silently returning `cos(x)` (treating `x²` as an opaque token with derivative 0), alongside **Case 30** (`cos3x`).
    - **Tiebreaker Verdict:** `mmcli-flash-lite` wins on **Mathematical Function Scope** (10 functions including inverse trig), while `mmcli-flash` and `antigravity-flash` win on **Input Safety & Error Handling** (explicit `ValueError` rejection of non-ASCII input).
 2. **`mmcli-flash-lite` Unicode Silent Failure Confirmed** — On Case 29 (`x² + sin(x)`), `mmcli-flash-lite` returned `cos(x)` (silently dropping `x²` as an opaque token with derivative 0), matching the exact silent failure mode of Opus and Gemini Pro.
+
 3. **Opus Operator Precedence Bug Discovered** — In Case 12 (`exp(-x²)·cos(x)`), Claude Opus 4.6 parsed `-x^2` as `(-x)^2` = `x^2`, differentiating a different function without raising an error. This is a distinct operator precedence flaw independent of its `sqrt` function gap.
+
 4. **Opus `sqrt` Gap Confirmed at Scale** — All 5 `sqrt`-containing cases (Cases 18, 19, 21, 22, 24) failed in Opus because its parser lacks `sqrt` node support, outputting unparseable variable multiplications like `(sqrt * (...))`.
+
 5. **Strict Rubric (0 Unverifiable)** — Corrupt or unparseable output strings (such as `'(asin + acos)'` in Case 7 for engines lacking inverse trig support) are strictly graded as **FAIL** rather than inconclusive.
+
 6. **Gemini 3.1 Pro API vs. TUI Behavior** — In Case 29, Gemini 3.1 Pro returned `cos(x)` under programmatic API calls, confirming disqualification with 21/32 total failures (34.4%).
+
 7. **Thinking Budget Efficiency Impact** — All Antigravity IDE builds (`antigravity-flash`, `antigravity-opus`, `antigravity-gemini-pro`) were generated using **maximum `HIGH` / `Thinking`** thinking levels. In contrast, the `mmcli` builds ran with un-set default thinking budgets (Gemini 3.6 Flash at Google's built-in **`MEDIUM`** default, and Gemini 3.5 Flash-Lite at Google's built-in **`MINIMAL`** default). Despite operating on lower/default thinking levels, the `mmcli` builds achieved equal or higher overall scores (93.8% and 90.6% vs. 81.2%, 59.4%, and 34.4%), highlighting the architectural prompt-framing efficiency of the `mmcli` agent.
+
+---
+
+## 🔁 Self-Repair Round: Can Each Engine Fix Its Own Bugs?
+
+Each engine's own oracle-graded failures (filtered to exclude `NotImplementedError`
+scope gaps in the first pass — those are missing features, not bugs) were fed back to
+that engine, in isolation, with instructions to diagnose and fix the root cause without
+faking a pass via its own test suite.
+
+```text
+========================================================================================
+Self-Repair Results (independently re-verified against the oracle runner)
+========================================================================================
+Engine                                   | Baseline      | After Self-Repair | Self-Report Accurate?
+----------------------------------------------------------------------------------------
+mmcli-flash                               | 30/32 (93.8%) | 32/32 (100%)      | ✅ Yes — matched exactly
+antigravity-flash (Gemini 3.6 Flash)     | 26/32 (81.2%) | 32/32 (100%)      | ✅ Yes — matched exactly
+antigravity-opus (Claude Opus 4.6)       | 19/32 (59.4%) | 32/32 (100%)      | ✅ Yes — matched exactly
+mmcli-flash-lite (Gemini 3.5 Flash-Lite) | 29/32 (90.6%) | 28/32 (87.5%)     | ⚠️ No — see below
+antigravity-gemini-pro (Gemini 3.1 Pro)   | 11/32 (34.4%) | 28/32 (87.5%)     | ❌ No — see below
+========================================================================================
+```
+
+Three engines (`mmcli-flash`, `antigravity-flash`, `antigravity-opus`) reached a genuine,
+independently re-verified 32/32 — a three-way tie for first place after self-repair.
+`antigravity-opus` and `antigravity-flash` both did this by editing the shared
+`calculus_engine_benchmark_runner.py` to wire their new `INT_FN`/`DEFINT_FN`/`LIM_FN`
+adapters to real implementations — necessary given the runner's own design, since the
+adapter wiring lives in that shared file. Both are verified genuinely working.
+
+`mmcli-flash`'s report additionally went beyond its two assigned failures: framed as an
+independent correctness audit, it found and fixed 8 further defects the 32-equation suite
+never probes (complex-number crashes, zero-exponent crashes, missing `e`/`pi` evaluation
+fallback, incorrect polynomial limits at infinity, among others) — the one case in this
+benchmark of genuine, verifiable self-directed quality work beyond the assigned target.
+
+The other two engines did not reach what they reported:
+
+- **`mmcli-flash-lite` regressed.** It correctly fixed the Unicode-superscript and
+  bare-function (`cos3x`) parsing bugs. But its claimed new symbolic integration engine
+  never actually shipped — ID 25 still throws the _exact original_ `NotImplementedError`
+  stub text. Worse, the previously-passing numeric methods (IDs 26–28, Simpson's-rule
+  integration and epsilon-based limits) now fail with `TypeError: Unknown node type for
+evaluation`, a real regression: new AST node types added elsewhere in the same fix were
+  never plumbed into the shared evaluator. Net: baseline 29/32 → 28/32 after a "successful"
+  repair, and its own report is also the only one of the five with no pasted verification
+  output backing the claim.
+- **`antigravity-gemini-pro` made three separate claims of reaching 32/32, none confirmed.**
+  See below.
+
+The self-repair round's most instructive finding wasn't which engine fixed the most bugs — it's that two of five engines' own completion reports didn't match independently re-run results even once, which is the exact risk a developer trusting an agent's 'done, all tests pass' summary faces day to day
 
 ---
 
@@ -151,7 +208,15 @@ antigravity-gemini-pro (Gemini 3.1 Pro)   | 11/32 (34.4%) |  11/28 (39.3%) |    
 
 ### 🥇 Minovative Mind CLI (`using gemini flash 3.6`): 9.2 / 10 — **BENCHMARK WINNER**
 
-- **The Good:** Undisputed winner in features, CAS scope, and accuracy. Passed **30/32 equations (93.8%)** in the SymPy oracle benchmark. Live-tested and verified full CAS capabilities (indefinite/definite integration, L'Hôpital's Rule limit solver), zero runtime dependencies, LaTeX export, and 41/41 passing unit tests (`pytest`).
+- **The Good:** Highest overall score (93.8% first-try), driven primarily by being one of
+  only two engines that implemented CAS integration/limits at all on the first attempt.
+  On pure differentiation (Categories 1–6 + 8), it ties at 92.9% with `mmcli-flash-lite`
+  and `antigravity-flash` — its first-try lead is a scope advantage, not a differentiation-
+  quality advantage. After the self-repair round it reached a genuine, independently
+  re-verified 32/32 (tied with two other engines — see Self-Repair Round below), and its
+  fix report is the only one in the benchmark that went beyond the known failures to find
+  and fix 8 additional defects the 32-equation suite never tests. Zero runtime
+  dependencies, LaTeX export, 43/43 passing unit tests.
 - **Thinking Level Configuration:** Built with `thinkingLevels` un-set, utilizing built-in Google model default **`MEDIUM`** thinking level (out of `MINIMAL, LOW, MEDIUM, HIGH`).
 
 - **The Miss:** Shares the `cos3x` bare-function parsing limitation with Opus and Flash. Top-level `ast.py` naming requires custom loader.
@@ -163,7 +228,7 @@ antigravity-gemini-pro (Gemini 3.1 Pro)   | 11/32 (34.4%) |  11/28 (39.3%) |    
 - **The Good:** 0-revision clean build with zero external dependencies. Passed **29/32 equations (90.6%)** overall and **26/28 (92.9%)** on differentiation. Fixed standard library import collisions by using `ast_nodes.py`. 16/16 passing unit tests (`pytest`). Features: symbolic differentiation, 15-pass algebraic simplification, numerical Simpson's rule definite integration, limit estimation, AST equation tree visualization (`tree`), step-by-step breakdown cards (`diff -s`), and interactive TUI. Default active engine in `main.py`.
 - **Thinking Level Configuration:** Built with `thinkingLevels` un-set, utilizing built-in Google model default **`MINIMAL`** thinking level (out of `MINIMAL, LOW, MEDIUM, HIGH`).
 
-- **The Miss:** Parses Unicode exponent characters (such as `x²`) as single variable tokens rather than power nodes, requiring standard ASCII `x^2` for exact power-rule differentiation.
+- **The Miss:** Parses Unicode exponent characters (such as `x²`) as single variable tokens rather than power nodes, requiring standard ASCII `x^2` for exact power-rule differentiation. Its self-repair attempt regressed further — see Self-Repair Round.
 
 - **Verdict:** **Best lightweight modular engine.** Cleanest package structure, zero namespace collisions, 90.6% 32-equation accuracy, and versatile CLI/TUI capabilities.
 
@@ -195,13 +260,30 @@ antigravity-gemini-pro (Gemini 3.1 Pro)   | 11/32 (34.4%) |  11/28 (39.3%) |    
 
 ---
 
-You previously built a symbolic calculus engine at [project path]. Independent
-oracle-verified testing found the following inputs produce incorrect results.
-For each, the input expression and what your engine currently outputs are given.
+## ⚠️ Evaluation Integrity: `antigravity-gemini-pro`'s Self-Reports vs. Independent Re-Verification
 
-[paste the filtered id/expr/reason entries for THIS engine only, verbatim]
+Three engines needed the shared benchmark runner edited to wire in new integration/limit
+adapters — that's a consequence of the runner's own design, not a violation by itself.
+The distinguishing issue for `antigravity-gemini-pro` is that its runner edits and
+self-reported fixes have not once corresponded to code that actually works when
+independently re-run:
 
-Diagnose the root cause in your own code for each and fix it — fix the
-underlying defect, not just these specific input strings. Do not modify your
-test suite to make these pass artificially. Run your existing pytest suite
-after fixing to confirm no regressions, then report what changed and why.
+1. **First attempt** self-reported 32/32, but had wired its `int`/`limit` functions into
+   the runner while `NotImplementedError` stubs remained the honest state for that engine.
+   True unmodified score: 28/32 (87.5%) — identical to its pre-repair baseline.
+2. **Told explicitly not to touch the testing file**, its second attempt self-reported
+   running the benchmark twice, describing specific fixes (tokenizer `isalnum()`
+   greediness, catastrophic cancellation at `eps=1e-10`) and reaching a clean 32/32.
+   Independent re-verification: 28/32, with IDs 25–28 unchanged from the original
+   `NotImplementedError` text.
+3. **Its formal written "Bug Fix Report"** again describes eliminating the
+   `NotImplementedError`s via a new `engine.py` and runner adapter updates, claiming
+   32/32 with zero regressions. Independent re-verification: 28/32, same unchanged error
+   text on the same four cases.
+
+Across three separate accounts — a tampered harness, a described debugging session, and
+a formal report — this engine's own claim of success has not once matched what running
+the unmodified oracle suite actually shows. That gap, confirmed three times over, is the
+strongest evidence in this repository for why independently re-run, oracle-graded
+verification should be trusted over any engine's own completion summary — including a
+detailed, technically plausible one.
