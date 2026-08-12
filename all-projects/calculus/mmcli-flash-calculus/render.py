@@ -6,7 +6,7 @@ Provides LaTeX rendering, Unicode math formatting, and ASCII expression AST tree
 
 from calculus.ast import (
     Expr, Const, Symbol, Add, Sub, Mul, Div, Pow, Neg,
-    Sin, Cos, Tan, Exp, Ln, Sqrt, Abs
+    Sin, Cos, Tan, Asin, Acos, Atan, Exp, Ln, Sqrt, Abs
 )
 
 # Superscript dictionary for Unicode math rendering
@@ -54,7 +54,7 @@ def to_latex(expr: Expr) -> str:
         right_latex = _latex_factor(expr.right)
 
         # Skip multiplication dot for constant times variable/func or symbol times symbol
-        if isinstance(expr.left, Const) or isinstance(expr.right, (Symbol, Sin, Cos, Tan, Exp, Ln, Sqrt, Pow)):
+        if isinstance(expr.left, Const) or isinstance(expr.right, (Symbol, Sin, Cos, Tan, Asin, Acos, Atan, Exp, Ln, Sqrt, Pow)):
             return f"{left_latex} {right_latex}"
         return f"{left_latex} \\cdot {right_latex}"
 
@@ -78,6 +78,15 @@ def to_latex(expr: Expr) -> str:
 
     if isinstance(expr, Tan):
         return f"\\tan\\left({to_latex(expr.operand)}\\right)"
+
+    if isinstance(expr, Asin):
+        return f"\\arcsin\\left({to_latex(expr.operand)}\\right)"
+
+    if isinstance(expr, Acos):
+        return f"\\arccos\\left({to_latex(expr.operand)}\\right)"
+
+    if isinstance(expr, Atan):
+        return f"\\arctan\\left({to_latex(expr.operand)}\\right)"
 
     if isinstance(expr, Exp):
         return f"e^{{{to_latex(expr.operand)}}}"
@@ -142,7 +151,7 @@ def render_pretty(expr: Expr, mode: str = "unicode") -> str:
             right_str = f"({right_str})"
 
         # Omit '*' for constant times symbol/func or implicit multiplication
-        if isinstance(expr.left, Const) or isinstance(expr.right, (Symbol, Sin, Cos, Tan, Exp, Ln, Sqrt, Pow)):
+        if isinstance(expr.left, Const) or isinstance(expr.right, (Symbol, Sin, Cos, Tan, Asin, Acos, Atan, Exp, Ln, Sqrt, Pow)):
             return f"{left_str}{right_str}"
         return f"{left_str} * {right_str}"
 
@@ -173,6 +182,15 @@ def render_pretty(expr: Expr, mode: str = "unicode") -> str:
 
     if isinstance(expr, Tan):
         return f"tan({render_pretty(expr.operand, mode)})"
+
+    if isinstance(expr, Asin):
+        return f"asin({render_pretty(expr.operand, mode)})"
+
+    if isinstance(expr, Acos):
+        return f"acos({render_pretty(expr.operand, mode)})"
+
+    if isinstance(expr, Atan):
+        return f"atan({render_pretty(expr.operand, mode)})"
 
     if isinstance(expr, Exp):
         if mode == "unicode":

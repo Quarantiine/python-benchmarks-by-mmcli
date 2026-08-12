@@ -8,7 +8,7 @@ chain rule, trigonometric, exponential, and logarithmic differentiation rules.
 from typing import Union, Tuple
 from calculus.ast import (
     Expr, Const, Symbol, Add, Sub, Mul, Div, Pow, Neg,
-    Sin, Cos, Tan, Exp, Ln, Sqrt, Abs
+    Sin, Cos, Tan, Asin, Acos, Atan, Exp, Ln, Sqrt, Abs
 )
 from calculus.simplify import simplify
 
@@ -106,6 +106,24 @@ def _differentiate(expr: Expr, var: str) -> Expr:
         u = expr.operand
         du = _differentiate(u, var)
         return Div(du, Pow(Cos(u), Const(2)))
+
+    if isinstance(expr, Asin):
+        # d/dx asin(u) = u' / sqrt(1 - u^2)
+        u = expr.operand
+        du = _differentiate(u, var)
+        return Div(du, Sqrt(Sub(Const(1), Pow(u, Const(2)))))
+
+    if isinstance(expr, Acos):
+        # d/dx acos(u) = -u' / sqrt(1 - u^2)
+        u = expr.operand
+        du = _differentiate(u, var)
+        return Div(Neg(du), Sqrt(Sub(Const(1), Pow(u, Const(2)))))
+
+    if isinstance(expr, Atan):
+        # d/dx atan(u) = u' / (1 + u^2)
+        u = expr.operand
+        du = _differentiate(u, var)
+        return Div(du, Add(Const(1), Pow(u, Const(2))))
 
     if isinstance(expr, Exp):
         # d/dx exp(u) = exp(u) * u'

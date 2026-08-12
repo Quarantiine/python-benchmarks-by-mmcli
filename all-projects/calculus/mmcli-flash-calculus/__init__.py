@@ -7,7 +7,7 @@ integration, limits, simplification, LaTeX/ASCII pretty rendering, and an intera
 
 from calculus.ast import (
     Expr, Const, Symbol, Add, Sub, Mul, Div, Pow, Neg,
-    Sin, Cos, Tan, Exp, Ln, Sqrt, Abs, E_CONST, PI_CONST
+    Sin, Cos, Tan, Asin, Acos, Atan, Exp, Ln, Sqrt, Abs, E_CONST, PI_CONST
 )
 from calculus.parser import parse
 from calculus.simplify import simplify
@@ -20,7 +20,7 @@ from calculus.cli import run_cli
 
 __all__ = [
     "Expr", "Const", "Symbol", "Add", "Sub", "Mul", "Div", "Pow", "Neg",
-    "Sin", "Cos", "Tan", "Exp", "Ln", "Sqrt", "Abs", "E_CONST", "PI_CONST",
+    "Sin", "Cos", "Tan", "Asin", "Acos", "Atan", "Exp", "Ln", "Sqrt", "Abs", "E_CONST", "PI_CONST",
     "parse", "simplify", "diff", "integrate", "limit",
     "render_pretty", "to_latex", "render_tree",
     "SymbolicCalculusTUI", "StepByStepEngine", "run_cli"

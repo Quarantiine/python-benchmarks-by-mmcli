@@ -408,6 +408,72 @@ class Tan(Function):
         return f"tan({self.operand})"
 
 
+class Asin(Function):
+    """Inverse Sine (arcsine) function: asin(x)."""
+
+    def eval(self, env: Optional[Dict[str, float]] = None) -> float:
+        val = self.operand.eval(env)
+        if val < -1.0 or val > 1.0:
+            raise ValueError("Domain error: asin argument must be in [-1, 1].")
+        return math.asin(val)
+
+    def subs(self, var: Union[str, Symbol], replacement: Any) -> Expr:
+        repl = _to_expr(replacement)
+        return Asin(self.operand.subs(var, repl))
+
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, Asin) and self.operand == other.operand
+
+    def __repr__(self) -> str:
+        return f"Asin({self.operand!r})"
+
+    def __str__(self) -> str:
+        return f"asin({self.operand})"
+
+
+class Acos(Function):
+    """Inverse Cosine (arccosine) function: acos(x)."""
+
+    def eval(self, env: Optional[Dict[str, float]] = None) -> float:
+        val = self.operand.eval(env)
+        if val < -1.0 or val > 1.0:
+            raise ValueError("Domain error: acos argument must be in [-1, 1].")
+        return math.acos(val)
+
+    def subs(self, var: Union[str, Symbol], replacement: Any) -> Expr:
+        repl = _to_expr(replacement)
+        return Acos(self.operand.subs(var, repl))
+
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, Acos) and self.operand == other.operand
+
+    def __repr__(self) -> str:
+        return f"Acos({self.operand!r})"
+
+    def __str__(self) -> str:
+        return f"acos({self.operand})"
+
+
+class Atan(Function):
+    """Inverse Tangent (arctangent) function: atan(x)."""
+
+    def eval(self, env: Optional[Dict[str, float]] = None) -> float:
+        return math.atan(self.operand.eval(env))
+
+    def subs(self, var: Union[str, Symbol], replacement: Any) -> Expr:
+        repl = _to_expr(replacement)
+        return Atan(self.operand.subs(var, repl))
+
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, Atan) and self.operand == other.operand
+
+    def __repr__(self) -> str:
+        return f"Atan({self.operand!r})"
+
+    def __str__(self) -> str:
+        return f"atan({self.operand})"
+
+
 class Exp(Function):
     """Natural exponential function: exp(x) = e^x."""
 

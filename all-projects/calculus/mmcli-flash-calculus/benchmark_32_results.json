@@ -1,7 +1,7 @@
 {
-  "antigravity-flash-calculus": {
-    "title": "antigravity-flash (Gemini 3.6 Flash)",
-    "time": 0.03760671615600586,
+  "mmcli-flash-calculus": {
+    "title": "mmcli-flash (Gemini 3.6 Flash Full CAS)",
+    "time": 0.059227943420410156,
     "results": [
       {
         "id": 1,
@@ -131,22 +131,22 @@
       {
         "id": 26,
         "status": "PASS",
-        "reason": "9.000000000000005 ~= 9.0"
+        "reason": "9.0 ~= 9.0"
       },
       {
         "id": 27,
         "status": "PASS",
-        "reason": "0.9999999983333334 ~= 1.0"
+        "reason": "1.0 ~= 1.0"
       },
       {
         "id": 28,
         "status": "PASS",
-        "reason": "0.4999999969612645 ~= 0.5"
+        "reason": "0.5 ~= 0.5"
       },
       {
         "id": 29,
         "status": "PASS",
-        "reason": "Clean rejection: ValueError: Unexpected character in expression: \u00b2"
+        "reason": "Clean rejection: ValueError: Unexpected character '\u00b2' in expression: x\u00b2 + sin(x)"
       },
       {
         "id": 30,

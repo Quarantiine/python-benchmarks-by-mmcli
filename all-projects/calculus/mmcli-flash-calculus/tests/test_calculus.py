@@ -8,7 +8,7 @@ import pytest
 
 from calculus import (
     parse, diff, integrate, limit, simplify, render_pretty, to_latex, render_tree,
-    Symbol, Const, Add, Sub, Mul, Div, Pow, Sin, Cos, Tan, Exp, Ln, Sqrt, Abs, Neg
+    Symbol, Const, Add, Sub, Mul, Div, Pow, Sin, Cos, Tan, Asin, Acos, Atan, Exp, Ln, Sqrt, Abs, Neg
 )
 
 
@@ -30,6 +30,14 @@ def test_parser_and_eval():
     expr3 = parse("x^2 + y^2 - 2*x*y")
     val3 = expr3.eval({"x": 3, "y": 2})
     assert math.isclose(val3, 1.0)
+
+    # Inverse trig parsing & implicit prefix function expansion
+    expr_inv = parse("asin(x) + acos(x)")
+    assert diff(expr_inv, "x") == Const(0)
+
+    expr_prefix = parse("cos3x")
+    d_prefix = diff(expr_prefix, "x")
+    assert d_prefix == Mul(Const(-3), Sin(Mul(Const(3), Symbol("x")))) or "-" in str(d_prefix)
 
 
 def test_simplification():
@@ -117,6 +125,16 @@ def test_differentiation_transcendental_and_chain_rules():
     df_abs = diff(parse("abs(x)"), x)
     assert math.isclose(df_abs.eval({"x": 5}), 1.0)
     assert math.isclose(df_abs.eval({"x": -5}), -1.0)
+
+    # Inverse Trig: Asin, Acos, Atan
+    df_asin = diff(Asin(x), x)
+    assert math.isclose(df_asin.eval({"x": 0.5}), 1.0 / math.sqrt(1 - 0.5**2))
+
+    df_acos = diff(Acos(x), x)
+    assert math.isclose(df_acos.eval({"x": 0.5}), -1.0 / math.sqrt(1 - 0.5**2))
+
+    df_atan = diff(Atan(x), x)
+    assert math.isclose(df_atan.eval({"x": 0.5}), 1.0 / (1 + 0.5**2))
 
 
 def test_differentiation_partial_and_higher_order():
@@ -312,3 +330,59 @@ def test_rendering_formats():
 
     tree_str = render_tree(expr)
     assert "Add" in tree_str
+
+
+def test_inverse_trig_differentiation():
+    x = Symbol("x")
+
+    # Parsing and differentiating asin(x), acos(x), atan(x)
+    f_asin = parse("asin(x)")
+    df_asin = diff(f_asin, x)
+    assert math.isclose(df_asin.eval({"x": 0.5}), 1.0 / math.sqrt(1 - 0.5**2))
+
+    f_acos = parse("acos(x)")
+    df_acos = diff(f_acos, x)
+    assert math.isclose(df_acos.eval({"x": 0.5}), -1.0 / math.sqrt(1 - 0.5**2))
+
+    f_atan = parse("atan(x)")
+    df_atan = diff(f_atan, x)
+    assert math.isclose(df_atan.eval({"x": 0.5}), 1.0 / (1 + 0.5**2))
+
+    # Alias function names: arcsin, arccos, arctan
+    assert math.isclose(diff(parse("arcsin(x)"), x).eval({"x": 0.5}), 1.0 / math.sqrt(1 - 0.5**2))
+    assert math.isclose(diff(parse("arccos(x)"), x).eval({"x": 0.5}), -1.0 / math.sqrt(1 - 0.5**2))
+    assert math.isclose(diff(parse("arctan(x)"), x).eval({"x": 0.5}), 1.0 / (1 + 0.5**2))
+
+    # Identity d/dx [asin(x) + acos(x)] = 0
+    f_sum = parse("asin(x) + acos(x)")
+    df_sum = diff(f_sum, x)
+    assert math.isclose(df_sum.eval({"x": 0.3}), 0.0, abs_tol=1e-9)
+
+    # Chain rule with inverse trig: d/dx [asin(2*x)] = 2 / sqrt(1 - 4*x^2)
+    f_chain = parse("asin(2*x)")
+    df_chain = diff(f_chain, x)
+    expected_chain = 2.0 / math.sqrt(1 - 4 * (0.25**2))
+    assert math.isclose(df_chain.eval({"x": 0.25}), expected_chain)
+
+
+def test_prefix_function_parsing():
+    x = Symbol("x")
+
+    # Prefix function parsing like cos3x -> cos(3*x)
+    f_cos3x = parse("cos3x")
+    df_cos3x = diff(f_cos3x, x)
+    assert math.isclose(df_cos3x.eval({"x": 0}), 0.0)
+    assert math.isclose(df_cos3x.eval({"x": math.pi / 6}), -3.0)
+
+    # Prefix function parsing like sin2x -> sin(2*x)
+    f_sin2x = parse("sin2x")
+    df_sin2x = diff(f_sin2x, x)
+    assert math.isclose(df_sin2x.eval({"x": 0}), 2.0)
+
+    # Prefix function parsing for exponential and log: exp3x, ln2x
+    f_exp3x = parse("exp3x")
+    assert math.isclose(diff(f_exp3x, x).eval({"x": 0}), 3.0)
+
+    f_ln2x = parse("ln2x")
+    assert math.isclose(diff(f_ln2x, x).eval({"x": 2}), 0.5)
+

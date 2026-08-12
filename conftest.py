@@ -9,7 +9,7 @@ import importlib.util
 from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parent
-CALCULUS_DIR = ROOT_DIR / "all-projects" / "calculus" / "mmcli-flash-lite-calculus"
+CALCULUS_DIR = ROOT_DIR / "all-projects" / "calculus" / "mmcli-flash-calculus"
 
 if str(CALCULUS_DIR) in sys.path:
     sys.path.remove(str(CALCULUS_DIR))

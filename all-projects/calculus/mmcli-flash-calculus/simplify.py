@@ -9,7 +9,7 @@ import math
 from typing import Tuple, Union
 from calculus.ast import (
     Expr, Const, Symbol, Add, Sub, Mul, Div, Pow, Neg,
-    Sin, Cos, Tan, Exp, Ln, Sqrt, Abs, E_CONST, PI_CONST
+    Sin, Cos, Tan, Asin, Acos, Atan, Exp, Ln, Sqrt, Abs, E_CONST, PI_CONST
 )
 
 
@@ -249,6 +249,10 @@ def _simplify_step(expr: Expr) -> Expr:
         if left == right:
             return Const(1)
 
+        # Negative numerator constant: (-c) / x -> -(c / x)
+        if isinstance(left, Const) and isinstance(left.value, (int, float)) and left.value < 0:
+            return Neg(Div(_make_const(-left.value), right))
+
         # x / (-1) -> -x
         if isinstance(right, Const) and right.value == -1:
             return Neg(left)
@@ -333,6 +337,49 @@ def _simplify_step(expr: Expr) -> Expr:
         if isinstance(arg, Const) and arg.value == 0:
             return Const(0)
         return Tan(arg)
+
+    if isinstance(expr, Asin):
+        arg = _simplify_step(expr.operand)
+        if isinstance(arg, Const):
+            if arg.value == 0:
+                return Const(0)
+            if arg.value == 1:
+                return Div(PI_CONST, Const(2))
+            if arg.value == -1:
+                return Neg(Div(PI_CONST, Const(2)))
+        if isinstance(arg, Neg):
+            return Neg(Asin(arg.operand))
+        if isinstance(arg, Sin):
+            return arg.operand
+        return Asin(arg)
+
+    if isinstance(expr, Acos):
+        arg = _simplify_step(expr.operand)
+        if isinstance(arg, Const):
+            if arg.value == 1:
+                return Const(0)
+            if arg.value == 0:
+                return Div(PI_CONST, Const(2))
+            if arg.value == -1:
+                return PI_CONST
+        if isinstance(arg, Cos):
+            return arg.operand
+        return Acos(arg)
+
+    if isinstance(expr, Atan):
+        arg = _simplify_step(expr.operand)
+        if isinstance(arg, Const):
+            if arg.value == 0:
+                return Const(0)
+            if arg.value == 1:
+                return Div(PI_CONST, Const(4))
+            if arg.value == -1:
+                return Neg(Div(PI_CONST, Const(4)))
+        if isinstance(arg, Neg):
+            return Neg(Atan(arg.operand))
+        if isinstance(arg, Tan):
+            return arg.operand
+        return Atan(arg)
 
     if isinstance(expr, Exp):
         arg = _simplify_step(expr.operand)

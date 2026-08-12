@@ -10,7 +10,7 @@ import re
 from typing import List, Tuple, Optional
 from calculus.ast import (
     Expr, Const, Symbol, Add, Sub, Mul, Div, Pow, Neg,
-    Sin, Cos, Tan, Exp, Ln, Sqrt, Abs, E_CONST, PI_CONST
+    Sin, Cos, Tan, Asin, Acos, Atan, Exp, Ln, Sqrt, Abs, E_CONST, PI_CONST
 )
 
 # Token types
@@ -25,7 +25,12 @@ TOKEN_LPAREN = "LPAREN"
 TOKEN_RPAREN = "RPAREN"
 TOKEN_COMMA = "COMMA"
 
-KNOWN_FUNCTIONS = {"sin": Sin, "cos": Cos, "tan": Tan, "exp": Exp, "ln": Ln, "log": Ln, "sqrt": Sqrt, "abs": Abs}
+KNOWN_FUNCTIONS = {
+    "sin": Sin, "cos": Cos, "tan": Tan,
+    "asin": Asin, "acos": Acos, "atan": Atan,
+    "arcsin": Asin, "arccos": Acos, "arctan": Atan,
+    "exp": Exp, "ln": Ln, "log": Ln, "sqrt": Sqrt, "abs": Abs
+}
 
 class Token:
     def __init__(self, type_: str, value: str):
@@ -54,6 +59,7 @@ def tokenize(expr_str: str) -> List[Token]:
     ]
     tok_regex = '|'.join(f'(?P<{pair[0]}>{pair[1]})' for pair in token_specification)
     raw_tokens: List[Token] = []
+    known_func_names = sorted(KNOWN_FUNCTIONS.keys(), key=len, reverse=True)
     
     for mo in re.finditer(tok_regex, expr_str):
         kind = mo.lastgroup
@@ -62,6 +68,24 @@ def tokenize(expr_str: str) -> List[Token]:
             continue
         elif kind == 'MISMATCH':
             raise ValueError(f"Unexpected character {value!r} in expression: {expr_str}")
+        elif kind == TOKEN_IDENT:
+            v_lower = value.lower()
+            if v_lower in ("pi", "e") or v_lower in KNOWN_FUNCTIONS:
+                raw_tokens.append(Token(kind, value))
+            else:
+                matched_func = None
+                for f in known_func_names:
+                    if v_lower.startswith(f) and len(v_lower) > len(f):
+                        matched_func = f
+                        break
+                if matched_func:
+                    rem = value[len(matched_func):]
+                    raw_tokens.append(Token(TOKEN_IDENT, value[:len(matched_func)]))
+                    raw_tokens.append(Token(TOKEN_LPAREN, "("))
+                    raw_tokens.extend(tokenize(rem))
+                    raw_tokens.append(Token(TOKEN_RPAREN, ")"))
+                else:
+                    raw_tokens.append(Token(kind, value))
         else:
             raw_tokens.append(Token(kind, value))
             
