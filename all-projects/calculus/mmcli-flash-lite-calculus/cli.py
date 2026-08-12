@@ -6,7 +6,7 @@ Supports diff, int, lim, simplify, eval, tree, and interactive TUI mode.
 import argparse
 import sys
 from calculus.parser import parse_expression
-from calculus.engine import differentiate, simplify
+from calculus.engine import differentiate, simplify, integrate
 from calculus.tui import run_tui, render_tree, render_derivation_steps, evaluate_expression
 
 
@@ -92,11 +92,9 @@ def main():
                 integral_val = total * (h / 3)
                 print(f"Definite Integral of {args.expression} d{args.var} from {a} to {b} ≈ {integral_val:.6f}")
             else:
-                print(f"Indefinite integration symbolic antiderivative preview for {args.expression}:")
-                # Basic integration patterns or numeric representation
-                print(f"∫ ({args.expression}) d{args.var} [Antiderivative estimator]")
-                # If derivative of something matches
-                print(f"Note: Use -l <lower> -u <upper> for numerical definite integration.")
+                antideriv = integrate(expr, args.var)
+                simplified = simplify(antideriv)
+                print(f"∫ ({args.expression}) d{args.var} = {simplified} + C")
 
         elif args.command == "lim":
             expr = parse_expression(args.expression)

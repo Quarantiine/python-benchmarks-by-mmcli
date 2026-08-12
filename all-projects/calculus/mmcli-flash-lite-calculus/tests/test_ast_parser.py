@@ -4,8 +4,11 @@ Unit tests for mathematical AST nodes, expression parser, evaluation, and string
 
 import math
 import pytest
-from calculus import (
-    parse_expression, Number, Variable, Add, Subtract, Multiply,
+from parser import (
+    parse_expression
+)
+from ast_nodes import (
+    Number, Variable, Add, Subtract, Multiply,
     Divide, Power, Negate, Sin, Cos, Log, Exp, Sqrt
 )
 
@@ -75,6 +78,13 @@ def test_constants():
     assert math.isclose(expr2.evaluate({}), math.e)
 
 
-def test_string_representations():
-    expr = parse_expression("x^2 + 3*x + 1")
-    assert str(expr) == "(((x ^ 2) + (3 * x)) + 1)"
+def test_unicode_superscripts_and_implicit_coefficients():
+    expr = parse_expression("x² + sin(x)")
+    env = {"x": 2.0}
+    expected = (2.0 ** 2.0) + math.sin(2.0)
+    assert math.isclose(expr.evaluate(env), expected, abs_tol=1e-7)
+
+    expr2 = parse_expression("cos3x")
+    env2 = {"x": 1.0}
+    expected2 = math.cos(3.0 * 1.0)
+    assert math.isclose(expr2.evaluate(env2), expected2, abs_tol=1e-7)

@@ -7,7 +7,7 @@ Supports:
 
 import math
 from typing import Dict, Union, Set, Optional
-from .ast_nodes import (
+from ast_nodes import (
     Node, Number, Variable, BinaryOp, UnaryOp,
     Add, Subtract, Multiply, Divide, Power, Negate,
     Sin, Cos, Tan, Log, Exp, Sqrt, Asin, Acos, Atan
@@ -18,6 +18,70 @@ def _try_simplify_sub_numbers(left: Node, right: Node) -> Node:
     if isinstance(left, Number) and isinstance(right, Number):
         return Number(left.value - right.value)
     return Subtract(left, right)
+
+
+def integrate(node: Node, var: str = "x") -> Node:
+    """Compute symbolic antiderivative of AST node with respect to var."""
+    res = _integrate_raw(node, var)
+    return simplify(res)
+
+
+def _integrate_raw(node: Node, var: str) -> Node:
+    if isinstance(node, Number):
+        return Multiply(node.clone(), Variable(var))
+
+    if isinstance(node, Variable):
+        if node.name == var:
+            return Divide(Power(Variable(var), Number(2.0)), Number(2.0))
+        return Multiply(Variable(node.name), Variable(var))
+
+    if isinstance(node, Add):
+        return Add(_integrate_raw(node.left, var), _integrate_raw(node.right, var))
+
+    if isinstance(node, Subtract):
+        return Subtract(_integrate_raw(node.left, var), _integrate_raw(node.right, var))
+
+    if isinstance(node, Negate):
+        return Negate(_integrate_raw(node.operand, var))
+
+    if isinstance(node, Multiply):
+        if isinstance(node.left, Number):
+            return Multiply(node.left.clone(), _integrate_raw(node.right, var))
+        if isinstance(node.right, Number):
+            return Multiply(node.right.clone(), _integrate_raw(node.left, var))
+        if var not in node.right.get_variables():
+            return Multiply(node.right.clone(), _integrate_raw(node.left, var))
+        if var not in node.left.get_variables():
+            return Multiply(node.left.clone(), _integrate_raw(node.right, var))
+
+    if isinstance(node, Power):
+        base, exponent = node.left, node.right
+        if isinstance(base, Variable) and base.name == var and isinstance(exponent, Number):
+            n = exponent.value
+            if math.isclose(n, -1.0, abs_tol=1e-12):
+                return Log(Variable(var))
+            new_n = n + 1.0
+            if math.isclose(new_n, round(new_n), abs_tol=1e-12):
+                new_n = round(new_n)
+            return Divide(Power(Variable(var), Number(new_n)), Number(new_n))
+
+    if isinstance(node, Sin):
+        if isinstance(node.operand, Variable) and node.operand.name == var:
+            return Negate(Cos(Variable(var)))
+
+    if isinstance(node, Cos):
+        if isinstance(node.operand, Variable) and node.operand.name == var:
+            return Sin(Variable(var))
+
+    if isinstance(node, Exp):
+        if isinstance(node.operand, Variable) and node.operand.name == var:
+            return Exp(Variable(var))
+
+    if isinstance(node, Log):
+        if isinstance(node.operand, Variable) and node.operand.name == var:
+            return Subtract(Multiply(Variable(var), Log(Variable(var))), Variable(var))
+
+    raise NotImplementedError(f"Symbolic integration not supported for node: {node}")
 
 
 def differentiate(node: Node, var: str = 'x') -> Node:

@@ -9,7 +9,7 @@ from calculus.ast_nodes import (
     Sin, Cos, Tan, Log, Exp, Sqrt, Asin, Acos, Atan
 )
 from calculus.parser import parse_expression, Parser, Lexer, Token
-from calculus.engine import differentiate, simplify
+from calculus.engine import differentiate, simplify, integrate
 from calculus.tui import run_tui, render_tree, render_derivation_steps, evaluate_expression
 
 __all__ = [
@@ -39,6 +39,7 @@ __all__ = [
     "Token",
     "differentiate",
     "simplify",
+    "integrate",
     "run_tui",
     "render_tree",
     "render_derivation_steps",

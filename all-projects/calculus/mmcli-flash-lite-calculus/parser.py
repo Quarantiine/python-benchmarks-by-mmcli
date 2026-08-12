@@ -6,7 +6,7 @@ parentheses, implicit multiplication, and standard mathematical functions.
 import math
 import re
 from typing import List, Union
-from .ast_nodes import (
+from ast_nodes import (
     Node, Number, Variable, Add, Subtract, Multiply, Divide, Power,
     Negate, Sin, Cos, Tan, Log, Exp, Sqrt, Asin, Acos, Atan
 )
@@ -98,9 +98,46 @@ class Lexer:
                 # Check if it's a standalone dot or number
                 tokens.append(self.number())
                 continue
-
-            if self.current_char.isalpha() or self.current_char == '_':
-                tokens.append(self.identifier())
+            if self.current_char.isalpha() or self.current_char == '_' or self.current_char in ('²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'):
+                if self.current_char in ('²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'):
+                    sup_map = {'²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9'}
+                    val = sup_map[self.current_char]
+                    tokens.append(Token(TokenType.POWER, '^', self.pos))
+                    tokens.append(Token(TokenType.NUMBER, val, self.pos))
+                    self.advance()
+                    continue
+                ident_token = self.identifier()
+                val = ident_token.value
+                sup_map = {'²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9'}
+                if val and val[-1] in sup_map:
+                    base_name = val[:-1]
+                    if base_name:
+                        tokens.append(Token(TokenType.IDENTIFIER, base_name, ident_token.pos))
+                    tokens.append(Token(TokenType.POWER, '^', ident_token.pos + len(base_name)))
+                    tokens.append(Token(TokenType.NUMBER, sup_map[val[-1]], ident_token.pos + len(base_name)))
+                else:
+                    # Check if identifier starts with function name followed immediately by a digit or variable without space (e.g. cos3x)
+                    func_names = ['sin', 'cos', 'tan', 'log', 'ln', 'exp', 'sqrt', 'asin', 'acos', 'atan']
+                    matched_func = None
+                    for fn in func_names:
+                        if val.lower().startswith(fn) and len(val) > len(fn):
+                            matched_func = fn
+                            break
+                    if matched_func:
+                        tokens.append(Token(TokenType.IDENTIFIER, matched_func, ident_token.pos))
+                        rest = val[len(matched_func):]
+                        # Push remaining characters as separate tokens (e.g. '3', 'x')
+                        i = 0
+                        while i < len(rest) and (rest[i].isdigit() or rest[i] == '.'):
+                            i += 1
+                        if i > 0:
+                            num_part = rest[:i]
+                            tokens.append(Token(TokenType.NUMBER, num_part, ident_token.pos + len(matched_func)))
+                            rest = rest[i:]
+                        if rest:
+                            tokens.append(Token(TokenType.IDENTIFIER, rest, ident_token.pos + len(matched_func) + i))
+                    else:
+                        tokens.append(ident_token)
                 continue
 
             if self.current_char == '+':
@@ -119,6 +156,13 @@ class Lexer:
                 if self.current_char == '*' and self.peek() == '*':
                     self.advance()
                 tokens.append(Token(TokenType.POWER, '^', self.pos))
+                self.advance()
+            elif self.current_char in ('²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'):
+                # Unicode superscript exponents e.g. x² -> x ^ 2
+                sup_map = {'²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9'}
+                val = sup_map[self.current_char]
+                tokens.append(Token(TokenType.POWER, '^', self.pos))
+                tokens.append(Token(TokenType.NUMBER, val, self.pos))
                 self.advance()
             elif self.current_char == '(':
                 tokens.append(Token(TokenType.LPAREN, '(', self.pos))
@@ -281,7 +325,7 @@ class Parser:
             if name in self.CONSTANTS and self.current_token.type != TokenType.LPAREN:
                 return Number(self.CONSTANTS[name])
 
-            # Check if function call
+            # Check if function call (with parentheses OR implicit argument without parentheses like cos3x, sinx, etc.)
             if self.current_token.type == TokenType.LPAREN:
                 self.consume(TokenType.LPAREN)
                 arg = self.expr()
@@ -292,6 +336,13 @@ class Parser:
                     return func_cls(arg)
                 else:
                     raise ValueError(f"Unknown function '{token.value}'")
+            elif name in self.FUNCTION_MAP:
+                # Implicit function call without parentheses e.g. cos3x
+                # If followed by an expression like 3*x or 3x, the argument should be the entire term/expr following the function name.
+                func_cls = self.FUNCTION_MAP[name]
+                # Parse expression or term with implicit multiplication
+                arg = self.term()
+                return func_cls(arg)
             else:
                 if name in self.CONSTANTS:
                     return Number(self.CONSTANTS[name])
