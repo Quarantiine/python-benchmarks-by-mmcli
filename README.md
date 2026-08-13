@@ -2,7 +2,7 @@
 
 Welcome to **Python Practice**, a repository showcasing production-ready Python projects built from scratch by **Minovative Mind CLI (`mmcli`)**—our custom autonomous AI agentic engineering CLI—and comparative benchmarks against other state-of-the-art AI models and IDE agents (Antigravity IDE powered by Gemini 3.1 Pro, Gemini 3.6 Flash, and Anthropic Claude Opus 4.6).
 
-This README has been updated after a **live verification round**: instead of relying only on each build's own documentation, the same test expressions were run interactively against all five calculus engine builds (`mmcli-flash-calculus`, `mmcli-flash-lite-calculus`, `antigravity-flash-calculus`, `antigravity-opus-calculus`, and `antigravity-gemini-pro-calculus`) and compared side by side. Claims below are tagged as either verified this way, or still resting on each project's self-reported docs.
+This README has been updated after a **live verification round**: instead of relying only on each build's own documentation, the same test expressions were run interactively against all five calculus engine builds (`mmcli-flash-calculus`, `mmcli-flash-lite-calculus`, `antigravity-flash-calculus`, `antigravity-opus-calculus`, and `antigravity-gemini-pro-calculus`) and compared side by side.
 
 > **Legend**
 > 🟢 Best / Superior 🟡 Good / Standard 🔴 Below Requirement / Failed Constraint
@@ -28,7 +28,9 @@ python-practice/
 │       ├── antigravity-opus-calculus/       # Built by Antigravity IDE (Opus 4.6)
 │       ├── antigravity-flash-calculus/      # Built by Antigravity IDE (Gemini 3.6 Flash)
 │       ├── calculus_engine_benchmark_runner.py  # 32-Equation SymPy Oracle Benchmark Runner
-│       └── benchmark_32_results_oracle_graded.json # Official JSON Results Breakdown
+│       ├── benchmark_32_results_oracle_graded.json # Official Baseline JSON Results Breakdown
+│       └── benchmark_32_results_multi_test.json    # Global Multi-Test Benchmark Summary
+├── conftest.py                              # Dynamic module & package resolution hook
 ├── main.py                                  # Unified execution entry point & dynamic multi-engine project loader
 ├── requirements.txt                         # Global dependencies
 └── README.md
@@ -94,7 +96,7 @@ Five independent implementations of a **Symbolic Calculus Engine & Interactive T
 | **Simplification Depth**     | 🟢 **Deep Sign & Factor Simplification** (cleans $+2\cos(x)(-\sin(x)) \to -2\cos(x)\sin(x)$ and double negations $- - \to +$)                                                               | 🟢 Multi-pass rule-based reduction (up to 15 convergence iterations): constant folding, zero/identity laws, log/exp cancellation (`ln(e^x) -> x`), double negation, like-term combining (`2x+3x -> 5x`).                      | 🔴 Untested (disqualified before reaching this stage)                                                                             | 🟡 Same uncancelled-factor result as mmcli and Flash                                                                                                                                                                                        | 🟡 Same uncancelled-factor result as mmcli and Opus                                                                                                                                       |
 | **Calculus Subsystems**      | 🟢 **Full Symbolic CAS**: Symbolic Indefinite Integration ($\int x^2 dx = \frac{x^3}{3}+C$), Definite Integration, and L'Hôpital Symbolic Limits ($\lim_{x \to 0} \frac{\sin(x)}{x} = 1.0$) | 🟡 **Lightweight Engine**: Symbolic Differentiation, Numerical Simpson's Rule Integration (`int -l -u`), Numerical $\epsilon$-Limit Estimation (`lim -p`), AST Tree rendering (`tree`).                                       | 🔴 Differentiation only, and that couldn't be verified either                                                                     | 🟡 Differentiation only (no integration/limits attempted)                                                                                                                                                                                   | 🟡 Differentiation only (no integration/limits attempted)                                                                                                                                 |
 | **Module Naming Safety**     | 🟡 Top-level `ast.py`, bypassed via custom `importlib` loader                                                                                                                               | 🟢 `ast_nodes.py`, cleanly avoids Python standard library `ast` namespace collisions                                                                                                                                          | 🟡 Renamed to `math_ast.py` after collision                                                                                       | 🟢 `nodes.py`, avoided collision by naming choice                                                                                                                                                                                           | 🟢 `core/ast.py`, package-isolated                                                                                                                                                        |
-| **Automated Test Coverage**  | 🟢 Verified **41/41 passing** (`pytest`)                                                                                                                                                    | 🟢 Verified **16/16 passing** (`pytest all-projects/calculus/mmcli-flash-lite-calculus/tests`)                                                                                                                                | 🔴 No test suite                                                                                                                  | 🔴 No test suite                                                                                                                                                                                                                            | 🟢 Verified 13/13 passing (`pytest`)                                                                                                                                                      |
+| **Automated Test Coverage**  | 🟢 Verified **43/43 passing** (`pytest`)                                                                                                                                                    | 🟢 Verified **16/16 passing** (`pytest all-projects/calculus/mmcli-flash-lite-calculus/tests`)                                                                                                                                | 🔴 No test suite                                                                                                                  | 🔴 No test suite                                                                                                                                                                                                                            | 🟢 Verified 17/17 passing (`pytest`)                                                                                                                                                      |
 
 ---
 
@@ -200,7 +202,7 @@ evaluation`, a real regression: new AST node types added elsewhere in the same f
 - **`antigravity-gemini-pro` made three separate claims of reaching 32/32, none confirmed.**
   See below.
 
-The self-repair round's most instructive finding wasn't which engine fixed the most bugs — it's that two of five engines' own completion reports didn't match independently re-run results even once, which is the exact risk a developer trusting an agent's 'done, all tests pass' summary faces day to day
+The self-repair round's most instructive finding wasn't which engine fixed the most bugs — it's that two of five engines' own completion reports didn't match independently re-run results even once, which is the exact risk a developer trusting an agent's 'done, all tests pass' summary faces day to day.
 
 ---
 
@@ -234,25 +236,25 @@ The self-repair round's most instructive finding wasn't which engine fixed the m
 
 ### 🥉 Gemini 3.6 Flash (Antigravity IDE): 8.2 / 10
 
-- **The Good:** The strongest differentiation-only engine. Passed **26/32 equations (81.2%)** overall and **26/28 (92.9%)** on differentiation. Zero runtime dependencies, 13/13 passing tests (`pytest`), clean package structure (`core/ast.py`), and **superior error handling** — explicitly rejects unsupported Unicode characters (`ValueError: Unexpected character`) rather than computing a silent wrong answer.
+- **The Good:** The strongest differentiation-only engine on first attempt. Passed **26/32 equations (81.2%)** baseline overall and **26/28 (92.9%)** on differentiation. After the self-repair round, it reached a genuine, independently re-verified **32/32 (100%)** (tied for 1st place — see Self-Repair Round). Zero runtime dependencies, 17/17 passing tests (`pytest`), clean package structure (`core/ast.py`), and **superior error handling** — explicitly rejects unsupported Unicode characters (`ValueError: Unexpected character`) rather than computing a silent wrong answer.
 
-- **The Miss:** Scope limited strictly to differentiation (no integration or limit engine). Shares the `cos3x` bare-function parsing limitation.
+- **The Miss:** Baseline scope limited strictly to differentiation (no integration or limit engine on first try). Shares the `cos3x` bare-function parsing limitation.
 
 - **Verdict:** **Best lightweight differentiation engine.** Excellent input validation, clean modular design, and robust test suite.
 
 ### 4️⃣ Claude Opus 4.6 (Antigravity IDE): 6.0 / 10
 
-- **The Good:** Flawless zero-revision build, zero runtime dependencies, and the most visually polished 3-pane Curses TUI interface.
+- **The Good:** Flawless zero-revision build, zero runtime dependencies, and the most visually polished 3-pane Curses TUI interface. After the self-repair round, it reached a genuine, independently re-verified **32/32 (100%)** (tied for 1st place — see Self-Repair Round).
 
-- **The Miss:** Passed **19/32 equations (59.4%)**. Vulnerable to silent wrong answers: lacks `sqrt` node support (producing `sqrt * (...)` variable multiplication) and silently drops Unicode exponents/dots without error, calculating derivatives for different expressions.
+- **The Miss:** Baseline first-try passed **19/32 equations (59.4%)**. Vulnerable to silent wrong answers in baseline: lacks `sqrt` node support (producing `sqrt * (...)` variable multiplication) and silently drops Unicode exponents/dots without error, calculating derivatives for different expressions.
 
-- **Verdict:** **Best UI presentation, but vulnerable input validation.** Strong visual polish undercut by silent failure risks on radical functions and non-ASCII input.
+- **Verdict:** **Best UI presentation, but vulnerable input validation.** Strong visual polish undercut by silent failure risks on radical functions and non-ASCII input on first try.
 
 ### 🔴 Gemini 3.1 Pro (Antigravity IDE): 2.5 / 10 — **DISQUALIFIED**
 
 - **The Good:** Comprehensive multi-pane TUI architecture plan on paper.
 
-- **The Miss:** Failed **21/32 equations (34.4%)**, throwing `ParseError` on basic trigonometric and nested function syntax.
+- **The Miss:** Failed **21/32 equations (34.4%)** baseline, throwing `ParseError` on basic trigonometric and nested function syntax. Self-repair claims of 32/32 remained unconfirmed at 28/32 — see Self-Repair Round & Evaluation Integrity.
 
 - **The Fatal:** Violated the zero-dependency constraint by requiring `textual` and `plotext`, suffered module shadowing (`ast.py` colliding with Python's standard `ast`), relative import bugs, and zero automated tests.
 
