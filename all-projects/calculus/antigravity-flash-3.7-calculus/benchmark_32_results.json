@@ -1,7 +1,7 @@
 {
-  "antigravity-opus-calculus": {
-    "title": "antigravity-opus (Claude Opus 4.6)",
-    "time": 0.03343486785888672,
+  "antigravity-flash-3.7-calculus": {
+    "title": "antigravity-flash-3.7 (Gemini 3.7 Flash)",
+    "time": 0.0700831413269043,
     "results": [
       {
         "id": 1,
@@ -131,17 +131,17 @@
       {
         "id": 26,
         "status": "PASS",
-        "reason": "9.0 ~= 9.0"
+        "reason": "9.000000000000005 ~= 9.0"
       },
       {
         "id": 27,
         "status": "PASS",
-        "reason": "0.9999999999998334 ~= 1.0"
+        "reason": "1.0 ~= 1.0"
       },
       {
         "id": 28,
         "status": "PASS",
-        "reason": "0.5000000413701854 ~= 0.5"
+        "reason": "0.5 ~= 0.5"
       },
       {
         "id": 29,
@@ -151,7 +151,7 @@
       {
         "id": 30,
         "status": "PASS",
-        "reason": "Clean rejection: ParseError: Function 'cos' requires parenthesised argument, e.g. cos(x)"
+        "reason": "Correctly parsed and differentiated"
       },
       {
         "id": 31,

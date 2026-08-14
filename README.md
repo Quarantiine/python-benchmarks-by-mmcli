@@ -1,8 +1,8 @@
 # Python Practice & AI Agentic Benchmarks (`python-practice`)
 
-Welcome to **Python Practice**, a repository showcasing production-ready Python projects built from scratch by **Minovative Mind CLI (`mmcli`)**—our custom autonomous AI agentic engineering CLI—and comparative benchmarks against other state-of-the-art AI models and IDE agents (Antigravity IDE powered by Gemini 3.1 Pro, Gemini 3.6 Flash, and Anthropic Claude Opus 4.6).
+Welcome to **Python Practice**, a repository showcasing production-ready Python projects built from scratch by **Minovative Mind CLI (`mmcli`)**—our custom autonomous AI agentic engineering CLI—and comparative benchmarks against other state-of-the-art AI models and IDE agents (Antigravity IDE powered by Gemini 3.1 Pro, Gemini 3.6 Flash, Gemini 3.7 Flash, and Claude Opus 4.6).
 
-This README has been updated after a **live verification round**: instead of relying only on each build's own documentation, the same test expressions were run interactively against all five calculus engine builds (`mmcli-flash-calculus`, `mmcli-flash-lite-calculus`, `antigravity-flash-calculus`, `antigravity-opus-calculus`, and `antigravity-gemini-pro-calculus`) and compared side by side.
+This README has been updated after **live verification rounds**: instead of relying only on each build's own documentation, the same test expressions were run interactively against all six calculus engine builds (`mmcli-flash-calculus`, `mmcli-flash-lite-calculus`, `antigravity-flash-calculus`, `antigravity-flash-3.7-calculus`, `antigravity-opus-calculus`, and `antigravity-gemini-pro-calculus`) and compared side by side.
 
 > **Legend**
 > 🟢 Best / Superior
@@ -26,8 +26,9 @@ python-practice/
 │       ├── mmcli-flash-calculus/            # Full CAS Engine (Gemini 3.6 Flash)
 │       ├── mmcli-flash-lite-calculus/       # Lightweight Engine (Gemini 3.5 Flash-Lite) [ACTIVE DEFAULT]
 │       ├── antigravity-gemini-pro-calculus/ # Built by Antigravity IDE (Gemini 3.1 Pro)
-│       ├── antigravity-opus-calculus/       # Built by Antigravity IDE (Opus 4.6)
+│       ├── antigravity-opus-calculus/       # Built by Antigravity IDE (Claude Opus 4.6)
 │       ├── antigravity-flash-calculus/      # Built by Antigravity IDE (Gemini 3.6 Flash)
+│       ├── antigravity-flash-3.7-calculus/  # Built by Antigravity IDE (Gemini 3.7 Flash)
 │       ├── calculus_engine_benchmark_runner.py  # 32-Equation SymPy Oracle Benchmark Runner
 │       ├── benchmark_32_results_oracle_graded.json # Official Baseline JSON Results Breakdown
 │       └── benchmark_32_results_multi_test.json    # Global Multi-Test Benchmark Summary
@@ -46,13 +47,15 @@ You can switch between any of the calculus builds under `all-projects/calculus/`
 python3 main.py --select
 
 # 2. Run the 32-Equation SymPy Oracle Benchmark Suite:
-python3 main.py --benchmark                               # Run across all 5 engines
+python3 main.py --benchmark                               # Run across all engines
+python3 main.py -p ag-flash-3.7 --benchmark               # Run benchmark ONLY for Gemini 3.7 Flash
 
 # 3. Run a specific engine by name or alias:
 python3 main.py -p flash                  # Minovative Mind CLI (Gemini 3.6 Flash CAS)
 python3 main.py -p lite                   # Minovative Mind CLI (Flash Lite Engine - Active Default)
 python3 main.py -p opus                   # Antigravity IDE (Claude Opus 4.6 TUI)
 python3 main.py -p ag-flash               # Antigravity IDE (Gemini 3.6 Flash TUI)
+python3 main.py -p ag-flash-3.7           # Antigravity IDE (Gemini 3.7 Flash Textual TUI & Plotter)
 python3 main.py -p pro                    # Antigravity IDE (Gemini 3.1 Pro Textual TUI)
 
 # 4. List all available engines and shortcuts:
@@ -63,13 +66,14 @@ python3 main.py --list-projects
 
 ## ⚖️ Featured Showcase: Symbolic Calculus & TUI Engines
 
-Five independent implementations of a **Symbolic Calculus Engine & Interactive Terminal User Interface (TUI)**, all built under a strict pure-Python, zero-dependency constraint:
+Six independent implementations of a **Symbolic Calculus Engine & Interactive Terminal User Interface (TUI)**:
 
 1. **`mmcli-flash-calculus`** — Minovative Mind CLI (Gemini 3.6 Flash Full CAS Engine — `thinkingLevels` un-set, used built-in Google model default: **`MEDIUM`** out of `MINIMAL, LOW, MEDIUM, HIGH`)
 2. **`mmcli-flash-lite-calculus`** — Minovative Mind CLI (Gemini 3.5 Flash-Lite Engine — `thinkingLevels` un-set, used built-in Google model default: **`MINIMAL`** out of `MINIMAL, LOW, MEDIUM, HIGH`)
 3. **`antigravity-gemini-pro-calculus`** — Antigravity IDE, Gemini 3.1 Pro (High)
 4. **`antigravity-opus-calculus`** — Antigravity IDE, Claude Opus 4.6 (Thinking)
 5. **`antigravity-flash-calculus`** — Antigravity IDE, Gemini 3.6 Flash (High)
+6. **`antigravity-flash-3.7-calculus`** — Antigravity IDE, Gemini 3.7 Flash (High)
 
 ---
 
@@ -78,17 +82,17 @@ Five independent implementations of a **Symbolic Calculus Engine & Interactive T
 _This matrix reflects each engine's state after the self-repair round (see Self-Repair
 Round above). "First-Try" columns preserve the original benchmark state for reference._
 
-| Evaluation Metric            | `mmcli-flash-calculus`                                                                                                                                                                                                             | `mmcli-flash-lite-calculus`                                                                                                                                                                                                              | `antigravity-gemini-pro-calculus`                                                                                                                                                                   | `antigravity-opus-calculus`                                                                                                                                                                | `antigravity-flash-calculus`                                                                                                                                                                  |
-| :--------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Model Engine**             | Gemini 3.6 Flash (`thinkingLevels` un-set; default **`MEDIUM`**)                                                                                                                                                                   | Gemini 3.5 Flash-Lite (`thinkingLevels` un-set; default **`MINIMAL`**)                                                                                                                                                                   | Gemini 3.1 Pro (High)                                                                                                                                                                               | Claude Opus 4.6 (Thinking)                                                                                                                                                                 | Gemini 3.6 Flash (High)                                                                                                                                                                       |
-| **32-Eq First-Try Score**    | 🟢 30/32 (93.8%)                                                                                                                                                                                                                   | 🟡 29/32 (90.6%)                                                                                                                                                                                                                         | 🔴 11/32 (34.4%) — disqualified                                                                                                                                                                     | 🔴 19/32 (59.4%)                                                                                                                                                                           | 🟡 26/32 (81.2%)                                                                                                                                                                              |
-| **32-Eq After Self-Repair**  | 🟢 **32/32 (100%)** — self-report matched exactly                                                                                                                                                                                  | 🔴 **28/32 (87.5%)** — regressed; claimed fix (ID 25) never shipped, and previously-passing IDs 26–28 newly broke                                                                                                                        | 🔴 **28/32 (87.5%)** — three separate self-reported "32/32" claims, none confirmed by independent re-run                                                                                            | 🟢 **32/32 (100%)** — self-report matched exactly                                                                                                                                          | 🟢 **32/32 (100%)** — self-report matched exactly                                                                                                                                             |
-| **Function Support**         | 🟢 11 functions (added `asin, acos, atan` in repair)                                                                                                                                                                               | 🟢 10 functions (`sin,cos,tan,log,ln,exp,sqrt,asin,acos,atan`) + constants                                                                                                                                                               | 🟢 8 functions (added `tan, asin, acos, exp, ln, sqrt` in repair)                                                                                                                                   | 🟢 9 functions (added `sqrt, asin, acos, atan` in repair)                                                                                                                                  | 🟢 10 functions (added `asin, acos, atan` in repair)                                                                                                                                          |
-| **Parser Capabilities**      | 🟢 Implicit multiplication; bare-function-name splitting added in repair (`cos3x` → `cos(3x)`)                                                                                                                                     | 🟡 Fixed Unicode exponent and bare-function parsing in repair; **regressed elsewhere** — new AST node types broke the shared numeric evaluator                                                                                           | 🟢 Repair added transcendental function tokens, unary-minus/exponent precedence fix, and ASCII-only identifier restriction (rejects Unicode cleanly) — but underlying `int`/`lim` wiring unverified | 🟢 Repair fixed the unary-minus/exponent precedence bug (`-x^2` now correctly `-(x^2)`, not `(-x)^2`) and added Unicode-superscript/ASCII-only tokenizing plus bare-function rejection     | 🟢 Repair added bare-function-name expansion (`cos3x` → `cos(3x)`) alongside existing correct `cos(3x)` handling                                                                              |
-| **Calculus Subsystems**      | 🟢 Full Symbolic CAS (differentiation, indefinite/definite integration, L'Hôpital limits) — unchanged, already complete pre-repair                                                                                                 | 🔴 Symbolic differentiation only; claimed new symbolic integration engine (ID 25) **not present** in the code that actually runs; previously-working numeric Simpson's-rule/epsilon-limit methods (IDs 26–28) now crash with `TypeError` | 🔴 Claimed new `engine.py` with polynomial integration + L'Hôpital-style limit solver; independent re-run shows the original `NotImplementedError` stubs unchanged — claim unconfirmed              | 🟢 Repair added genuine symbolic integration + numeric (Simpson's-rule) definite integration + multi-epsilon limit solver, wired into the shared runner and independently verified working | 🟢 Repair added genuine symbolic integration + numeric definite integration + limit solver (symmetric perturbation sampling), wired into the shared runner and independently verified working |
-| **Self-Repair Report Rigor** | 🟢 Framed as a full correctness audit; found & fixed **8 additional defects** beyond the 2 assigned failures (complex-number crashes, zero-exponent crashes, infinite-limit bugs, etc.), all with pasted `pytest`/benchmark output | 🔴 Only report with **no pasted verification output** — asserted success in prose only; this is the one report whose central claim was later confirmed false                                                                             | 🔴 Three separate accounts of success (harness edit, described debug session, formal report) — **none independently confirmed**                                                                     | 🟢 Detailed root-cause writeup with exact grammar diff for the precedence fix, pasted `pytest`/benchmark output, verified genuine                                                          | 🟢 Detailed writeup with before/after metrics table, pasted `pytest`/benchmark output, verified genuine                                                                                       |
-| **Automated Test Coverage**  | 🟢 43/43 passing (`pytest`) — up from 41/41 pre-repair                                                                                                                                                                             | 🟡 16/16 passing (`pytest`) — unchanged; new integration code has no corresponding passing coverage                                                                                                                                      | 🔴 Still no verified test suite                                                                                                                                                                     | 🟢 Genuine test suite growth reported, verified via pasted output                                                                                                                          | 🟢 17/17 passing (`pytest`) — up from 13/13 pre-repair                                                                                                                                        |
-| **Module Naming Safety**     | 🟡 Top-level `ast.py`, custom `importlib` loader — unchanged                                                                                                                                                                       | 🟢 `ast_nodes.py` — unchanged                                                                                                                                                                                                            | 🟡 `math_ast.py` — unchanged                                                                                                                                                                        | 🟢 `nodes.py` — unchanged                                                                                                                                                                  | 🟢 `core/ast.py` — unchanged                                                                                                                                                                  |
+| Evaluation Metric            | `mmcli-flash-calculus`                                                                                                                                                                                                             | `mmcli-flash-lite-calculus`                                                                                                                                                                                                              | `antigravity-gemini-pro-calculus`                                                                                                                                                                   | `antigravity-opus-calculus`                                                                                                                                                                | `antigravity-flash-calculus`                                                                                                                                                                  | `antigravity-flash-3.7-calculus`                                                                                                                                                                         |
+| :--------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Model Engine**             | Gemini 3.6 Flash (`thinkingLevels` un-set; default **`MEDIUM`**)                                                                                                                                                                   | Gemini 3.5 Flash-Lite (`thinkingLevels` un-set; default **`MINIMAL`**)                                                                                                                                                                   | Gemini 3.1 Pro (High)                                                                                                                                                                               | Claude Opus 4.6 (Thinking)                                                                                                                                                                 | Gemini 3.6 Flash (High)                                                                                                                                                                       | Gemini 3.7 Flash (High)                                                                                                                                                                                  |
+| **32-Eq First-Try Score**    | 🟢 30/32 (93.8%)                                                                                                                                                                                                                   | 🟡 29/32 (90.6%)                                                                                                                                                                                                                         | 🔴 11/32 (34.4%) — disqualified                                                                                                                                                                     | 🔴 19/32 (59.4%)                                                                                                                                                                           | 🟡 26/32 (81.2%)                                                                                                                                                                              | 🟡 26/32 (81.2%)                                                                                                                                                                                         |
+| **32-Eq After Self-Repair**  | 🟢 **32/32 (100%)** — self-report matched exactly                                                                                                                                                                                  | 🔴 **28/32 (87.5%)** — regressed; claimed fix (ID 25) never shipped, and previously-passing IDs 26–28 newly broke                                                                                                                        | 🔴 **28/32 (87.5%)** — three separate self-reported "32/32" claims, none confirmed by independent re-run                                                                                            | 🟢 **32/32 (100%)** — self-report matched exactly                                                                                                                                          | 🟢 **32/32 (100%)** — self-report matched exactly                                                                                                                                             | 🟢 **32/32 (100%)** — self-report matched exactly                                                                                                                                                        |
+| **Function Support**         | 🟢 11 functions (added `asin, acos, atan` in repair)                                                                                                                                                                               | 🟢 10 functions (`sin,cos,tan,log,ln,exp,sqrt,asin,acos,atan`) + constants                                                                                                                                                               | 🟢 8 functions (added `tan, asin, acos, exp, ln, sqrt` in repair)                                                                                                                                   | 🟢 9 functions (added `sqrt, asin, acos, atan` in repair)                                                                                                                                  | 🟢 10 functions (added `asin, acos, atan` in repair)                                                                                                                                          | 🟢 **16 functions** (`sin,cos,tan,sec,csc,cot,asin,acos,atan,sinh,cosh,tanh,exp,ln,log,sqrt,abs`) + constants                                                                                            |
+| **Parser Capabilities**      | 🟢 Implicit multiplication; bare-function-name splitting added in repair (`cos3x` → `cos(3x)`)                                                                                                                                     | 🟡 Fixed Unicode exponent and bare-function parsing in repair; **regressed elsewhere** — new AST node types broke the shared numeric evaluator                                                                                           | 🟢 Repair added transcendental function tokens, unary-minus/exponent precedence fix, and ASCII-only identifier restriction (rejects Unicode cleanly) — but underlying `int`/`lim` wiring unverified | 🟢 Repair fixed the unary-minus/exponent precedence bug (`-x^2` now correctly `-(x^2)`, not `(-x)^2`) and added Unicode-superscript/ASCII-only tokenizing plus bare-function rejection     | 🟢 Repair added bare-function-name expansion (`cos3x` → `cos(3x)`) alongside existing correct `cos(3x)` handling                                                                              | 🟢 Pratt parser with implicit multiplication; repair added Unicode superscript exponent mapping (`x²` → `x^2`) and bare-function prefix splitting (`cos3x` → `cos(3x)`)                                  |
+| **Calculus Subsystems**      | 🟢 Full Symbolic CAS (differentiation, indefinite/definite integration, L'Hôpital limits) — unchanged, already complete pre-repair                                                                                                 | 🔴 Symbolic differentiation only; claimed new symbolic integration engine (ID 25) **not present** in the code that actually runs; previously-working numeric Simpson's-rule/epsilon-limit methods (IDs 26–28) now crash with `TypeError` | 🔴 Claimed new `engine.py` with polynomial integration + L'Hôpital-style limit solver; independent re-run shows the original `NotImplementedError` stubs unchanged — claim unconfirmed              | 🟢 Repair added genuine symbolic integration + numeric (Simpson's-rule) definite integration + multi-epsilon limit solver, wired into the shared runner and independently verified working | 🟢 Repair added genuine symbolic integration + numeric definite integration + limit solver (symmetric perturbation sampling), wired into the shared runner and independently verified working | 🟢 Full Symbolic CAS (differentiation, higher-order, multivariable gradient/Hessian, Taylor, extrema/roots; repair added symbolic integration `integrator.py` and L'Hôpital / perturbation limit solver) |
+| **Self-Repair Report Rigor** | 🟢 Framed as a full correctness audit; found & fixed **8 additional defects** beyond the 2 assigned failures (complex-number crashes, zero-exponent crashes, infinite-limit bugs, etc.), all with pasted `pytest`/benchmark output | 🔴 Only report with **no pasted verification output** — asserted success in prose only; this is the one report whose central claim was later confirmed false                                                                             | 🔴 Three separate accounts of success (harness edit, described debug session, formal report) — **none independently confirmed**                                                                     | 🟢 Detailed root-cause writeup with exact grammar diff for the precedence fix, pasted `pytest`/benchmark output, verified genuine                                                          | 🟢 Detailed writeup with before/after metrics table, pasted `pytest`/benchmark output, verified genuine                                                                                       | 🟢 Detailed root-cause writeup across all 6 failing cases (precedence, integrator, limits, Unicode, bare functions), verified genuine with pasted `pytest` & benchmark output                            |
+| **Automated Test Coverage**  | 🟢 43/43 passing (`pytest`) — up from 41/41 pre-repair                                                                                                                                                                             | 🟡 16/16 passing (`pytest`) — unchanged; new integration code has no corresponding passing coverage                                                                                                                                      | 🔴 Still no verified test suite                                                                                                                                                                     | 🟢 Genuine test suite growth reported, verified via pasted output                                                                                                                          | 🟢 17/17 passing (`pytest`) — up from 13/13 pre-repair                                                                                                                                        | 🟢 **41/41 passing (`pytest`)** — up from 35/35 pre-repair (added dedicated `test_integration_and_limits.py`)                                                                                            |
+| **Module Naming Safety**     | 🟡 Top-level `ast.py`, custom `importlib` loader — unchanged                                                                                                                                                                       | 🟢 `ast_nodes.py` — unchanged                                                                                                                                                                                                            | 🟡 `math_ast.py` — unchanged                                                                                                                                                                        | 🟢 `nodes.py` — unchanged                                                                                                                                                                  | 🟢 `core/ast.py` — unchanged                                                                                                                                                                  | 🟢 `engine/ast_nodes.py`, clean namespace isolation                                                                                                                                                      |
 
 _Dependency discipline, LaTeX/export support, and TUI/interface details are unchanged
 from the first-try matrix and are not repeated here — see the Self-Repair Round and
@@ -96,7 +100,7 @@ Evaluation Integrity sections above for the reasoning behind each repair-state s
 
 ### 🧪 32-Equation Oracle-Verified Benchmark Suite
 
-A comprehensive 32-equation benchmark was executed across all 5 calculus engines using an independent SymPy ground-truth oracle runner (`all-projects/calculus/calculus_engine_benchmark_runner.py`). Every derivative, integral, limit, and boundary condition was graded with a single, uniform rubric across 8 mathematical categories:
+A comprehensive 32-equation benchmark was executed across all 6 calculus engines using an independent SymPy ground-truth oracle runner (`all-projects/calculus/calculus_engine_benchmark_runner.py`). Every derivative, integral, limit, and boundary condition was graded with a single, uniform rubric across 8 mathematical categories:
 
 ```text
 ========================================================================================
@@ -107,6 +111,7 @@ Engine                                   | Full 32 Score | Diff-Only (28) | Unve
 mmcli-flash (Gemini 3.6 Flash Full CAS)   | 30/32 (93.8%) |  26/28 (92.9%) |      0
 mmcli-flash-lite (Gemini 3.5 Flash-Lite)  | 29/32 (90.6%) |  26/28 (92.9%) |      0
 antigravity-flash (Gemini 3.6 Flash)     | 26/32 (81.2%) |  26/28 (92.9%) |      0
+antigravity-flash-3.7 (Gemini 3.7 Flash) | 26/32 (81.2%) |  25/28 (89.3%) |      0
 antigravity-opus (Claude Opus 4.6)       | 19/32 (59.4%) |  19/28 (67.9%) |      0
 antigravity-gemini-pro (Gemini 3.1 Pro)   | 11/32 (34.4%) |  11/28 (39.3%) |      0
 ========================================================================================
@@ -117,16 +122,16 @@ antigravity-gemini-pro (Gemini 3.1 Pro)   | 11/32 (34.4%) |  11/28 (39.3%) |    
 _Original first-try breakdown preserved above for reference. This table shows the state
 after each engine's self-repair round, independently re-verified against the oracle._
 
-| Category                                   | Description                                                                                                       | `mmcli-flash 3.6` | `mmcli-flash-lite 3.5` | `antigravity-flash 3.6` | `antigravity-opus 4.6` | `antigravity-gemini-pro 3.1`       |
-| :----------------------------------------- | :---------------------------------------------------------------------------------------------------------------- | :---------------- | :--------------------- | :---------------------- | :--------------------- | :--------------------------------- |
-| **Cat 1: Polynomials (4 eq)**              | $x^5$, $(2x+5)^4$, negative exponents, products                                                                   | 🟢 4/4            | 🟢 4/4                 | 🟢 4/4                  | 🟢 4/4                 | 🟢 4/4                             |
-| **Cat 2: Trigonometric (4 eq)**            | $\sin\cos$, $\tan(x^2+1)$, $\arcsin+\arccos$, $\tan^2+1$                                                          | 🟢 4/4 _(fixed)_  | 🟢 4/4                 | 🟢 4/4 _(fixed)_        | 🟢 4/4 _(fixed)_       | 🟢 4/4 _(fixed)_                   |
-| **Cat 3: Exp & Log (4 eq)**                | $e^{3x}(x^2-2x+2)$, $\frac{\ln(x^2+1)}{x}$, $x^3\ln x$, $e^{-x^2}\cos x$                                          | 🟢 4/4            | 🟢 4/4                 | 🟢 4/4                  | 🟢 4/4 _(fixed)_       | 🟢 4/4 _(claimed, unverified)_     |
-| **Cat 4: Product/Quotient (4 eq)**         | $\frac{x^2+1}{x^3-1}$, $\frac{\sin x}{\cos x + 1}$, $x^2 \sin x \ln x$, $\frac{e^x \sin x}{x^2+1}$                | 🟢 4/4            | 🟢 4/4                 | 🟢 4/4                  | 🟢 4/4                 | 🟢 4/4 _(claimed, unverified)_     |
-| **Cat 5: Nested Chain Rule (4 eq)**        | $\sin(\cos(\tan x))$, $\sqrt{1+\sin^2 x}$, $e^{\sqrt{x^2+4}}$, $\ln(\sin(x^3+1))$                                 | 🟢 4/4            | 🟢 4/4                 | 🟢 4/4                  | 🟢 4/4 _(fixed)_       | 🟢 4/4 _(claimed, unverified)_     |
-| **Cat 6: Radicals (4 eq)**                 | $\sqrt{x^3+2x}$, $\frac{1}{\sqrt{4-x^2}}$, $(x^3+1)^{2/3}$, $\sqrt{x} \ln(\sqrt{x})$                              | 🟢 4/4            | 🟢 4/4                 | 🟢 4/4                  | 🟢 4/4 _(fixed)_       | 🟢 4/4 _(claimed, unverified)_     |
-| **Cat 7: CAS Integration & Limits (4 eq)** | $\int (x^4-2x+1) dx$, $\int_0^3 x^2 dx$, $\lim_{x \to 0} \frac{\sin x}{x}$, $\lim_{x \to 0} \frac{1-\cos x}{x^2}$ | 🟢 4/4            | 🔴 0/4 _(regressed)_   | 🟢 4/4 _(fixed)_        | 🟢 4/4 _(fixed)_       | 🔴 0/4 _(unchanged — false claim)_ |
-| **Cat 8: Boundary & Errors (4 eq)**        | $x^2+\sin x$ (Unicode), bare `cos3x`, syntax `sin(x`, syntax `x=2`                                                | 🟢 4/4 _(fixed)_  | 🟢 4/4 _(fixed)_       | 🟢 4/4 _(fixed)_        | 🟢 4/4 _(fixed)_       | 🟢 4/4                             |
+| Category                                   | Description                                                                                                       | `mmcli-flash 3.6` | `mmcli-flash-lite 3.5` | `antigravity-flash 3.6` | `antigravity-flash-3.7 3.7` | `antigravity-opus 4.6` | `antigravity-gemini-pro 3.1`       |
+| :----------------------------------------- | :---------------------------------------------------------------------------------------------------------------- | :---------------- | :--------------------- | :---------------------- | :-------------------------- | :--------------------- | :--------------------------------- |
+| **Cat 1: Polynomials (4 eq)**              | $x^5$, $(2x+5)^4$, negative exponents, products                                                                   | 🟢 4/4            | 🟢 4/4                 | 🟢 4/4                  | 🟢 4/4                      | 🟢 4/4                 | 🟢 4/4                             |
+| **Cat 2: Trigonometric (4 eq)**            | $\sin\cos$, $\tan(x^2+1)$, $\arcsin+\arccos$, $\tan^2+1$                                                          | 🟢 4/4 _(fixed)_  | 🟢 4/4                 | 🟢 4/4 _(fixed)_        | 🟢 4/4                      | 🟢 4/4 _(fixed)_       | 🟢 4/4 _(fixed)_                   |
+| **Cat 3: Exp & Log (4 eq)**                | $e^{3x}(x^2-2x+2)$, $\frac{\ln(x^2+1)}{x}$, $x^3\ln x$, $e^{-x^2}\cos x$                                          | 🟢 4/4            | 🟢 4/4                 | 🟢 4/4                  | 🟢 4/4                      | 🟢 4/4 _(fixed)_       | 🟢 4/4 _(claimed, unverified)_     |
+| **Cat 4: Product/Quotient (4 eq)**         | $\frac{x^2+1}{x^3-1}$, $\frac{\sin x}{\cos x + 1}$, $x^2 \sin x \ln x$, $\frac{e^x \sin x}{x^2+1}$                | 🟢 4/4            | 🟢 4/4                 | 🟢 4/4                  | 🟢 4/4                      | 🟢 4/4                 | 🟢 4/4 _(claimed, unverified)_     |
+| **Cat 5: Nested Chain Rule (4 eq)**        | $\sin(\cos(\tan x))$, $\sqrt{1+\sin^2 x}$, $e^{\sqrt{x^2+4}}$, $\ln(\sin(x^3+1))$                                 | 🟢 4/4            | 🟢 4/4                 | 🟢 4/4                  | 🟢 4/4                      | 🟢 4/4 _(fixed)_       | 🟢 4/4 _(claimed, unverified)_     |
+| **Cat 6: Radicals (4 eq)**                 | $\sqrt{x^3+2x}$, $\frac{1}{\sqrt{4-x^2}}$, $(x^3+1)^{2/3}$, $\sqrt{x} \ln(\sqrt{x})$                              | 🟢 4/4            | 🟢 4/4                 | 🟢 4/4                  | 🟢 4/4 _(fixed)_            | 🟢 4/4 _(fixed)_       | 🟢 4/4 _(claimed, unverified)_     |
+| **Cat 7: CAS Integration & Limits (4 eq)** | $\int (x^4-2x+1) dx$, $\int_0^3 x^2 dx$, $\lim_{x \to 0} \frac{\sin x}{x}$, $\lim_{x \to 0} \frac{1-\cos x}{x^2}$ | 🟢 4/4            | 🔴 0/4 _(regressed)_   | 🟢 4/4 _(fixed)_        | 🟢 4/4 _(fixed)_            | 🟢 4/4 _(fixed)_       | 🔴 0/4 _(unchanged — false claim)_ |
+| **Cat 8: Boundary & Errors (4 eq)**        | $x^2+\sin x$ (Unicode), bare `cos3x`, syntax `sin(x`, syntax `x=2`                                                | 🟢 4/4 _(fixed)_  | 🟢 4/4 _(fixed)_       | 🟢 4/4 _(fixed)_        | 🟢 4/4 _(fixed)_            | 🟢 4/4 _(fixed)_       | 🟢 4/4                             |
 
 ## 📈 Key Takeaways
 
@@ -145,7 +150,9 @@ after each engine's self-repair round, independently re-verified against the ora
 
 6. **Gemini 3.1 Pro API vs. TUI Behavior** — In Case 29, Gemini 3.1 Pro returned `cos(x)` under programmatic API calls, confirming disqualification with 21/32 total failures (34.4%).
 
-7. **Thinking Budget Efficiency Impact** — All Antigravity IDE builds (`antigravity-flash`, `antigravity-opus`, `antigravity-gemini-pro`) were generated using **maximum `HIGH` / `Thinking`** thinking levels. In contrast, the `mmcli` builds ran with un-set default thinking budgets (Gemini 3.6 Flash at Google's built-in **`MEDIUM`** default, and Gemini 3.5 Flash-Lite at Google's built-in **`MINIMAL`** default). Despite operating on lower/default thinking levels, the `mmcli` builds achieved equal or higher overall scores (93.8% and 90.6% vs. 81.2%, 59.4%, and 34.4%), highlighting the architectural prompt-framing efficiency of the `mmcli` agent.
+7. **Gemini 3.7 Flash Regressed on Unicode Safety Despite Broader Scope** — Comparing `antigravity-flash` (3.6) to `antigravity-flash-3.7` first-try results directly: 3.6 correctly rejected Unicode input (Case 29) with a clean `ValueError`; 3.7, the newer model with a larger claimed scope (16 functions vs. 10, multivariable calculus, Braille plotting) and marketed coding/debugging improvements, silently returned the wrong answer `cos(x)` for the identical input instead. It also introduced a new bug class not seen elsewhere in the benchmark: Case 23's derivative printed with an unparenthesized negative fractional exponent (`^-1/3`), which is genuinely ambiguous to both a parser and a human reader. Both were cleanly diagnosed and fixed in self-repair, but the first-try regression itself is notable — broader model scope and newer training did not automatically preserve a specific, previously-solved safety behavior.
+
+8. **Thinking Budget Efficiency Impact** — All Antigravity IDE builds (`antigravity-flash`, `antigravity-flash-3.7`, `antigravity-opus`, `antigravity-gemini-pro`) were generated using **maximum `HIGH` / `Thinking`** thinking levels. In contrast, the `mmcli` builds ran with un-set default thinking budgets (Gemini 3.6 Flash at Google's built-in **`MEDIUM`** default, and Gemini 3.5 Flash-Lite at Google's built-in **`MINIMAL`** default). Despite lower/default thinking levels, the `mmcli` builds achieved equal or higher first-try overall scores (93.8% and 90.6%) than three of the four Antigravity builds (81.2%, 81.2%, 59.4%, 34.4%), highlighting the architectural prompt-framing efficiency of the `mmcli` agent — though this gap narrows or closes entirely once self-repair is factored in (see Self-Repair Round).
 
 ---
 
@@ -163,25 +170,31 @@ Self-Repair Results (independently re-verified against the oracle runner)
 Engine                                   | Baseline      | After Self-Repair | Self-Report Accurate?
 ----------------------------------------------------------------------------------------
 mmcli-flash                               | 30/32 (93.8%) | 32/32 (100%)      | ✅ Yes — matched exactly
+antigravity-flash-3.7 (Gemini 3.7 Flash) | 26/32 (81.2%) | 32/32 (100%)      | ✅ Yes — matched exactly
 antigravity-flash (Gemini 3.6 Flash)     | 26/32 (81.2%) | 32/32 (100%)      | ✅ Yes — matched exactly
-antigravity-opus (Claude Opus 4.6)       | 19/32 (59.4%) | 32/32 (100%)      | ✅ Yes — matched exactly
 mmcli-flash-lite (Gemini 3.5 Flash-Lite) | 29/32 (90.6%) | 28/32 (87.5%)     | ⚠️ No — see below
+antigravity-opus (Claude Opus 4.6)       | 19/32 (59.4%) | 32/32 (100%)      | ✅ Yes — matched exactly
 antigravity-gemini-pro (Gemini 3.1 Pro)   | 11/32 (34.4%) | 28/32 (87.5%)     | ❌ No — see below
 ========================================================================================
 ```
 
-Three engines (`mmcli-flash`, `antigravity-flash`, `antigravity-opus`) reached a genuine,
-independently re-verified 32/32 — a three-way tie for first place after self-repair.
-`antigravity-opus` and `antigravity-flash` both did this by editing the shared
+Four engines (`mmcli-flash`, `antigravity-flash-3.7`, `antigravity-flash`, `antigravity-opus`) reached a genuine,
+independently re-verified 32/32 — a four-way tie for first place after self-repair.
+`antigravity-opus`, `antigravity-flash`, and `antigravity-flash-3.7` all did this by editing the shared
 `calculus_engine_benchmark_runner.py` to wire their new `INT_FN`/`DEFINT_FN`/`LIM_FN`
 adapters to real implementations — necessary given the runner's own design, since the
-adapter wiring lives in that shared file. Both are verified genuinely working.
+adapter wiring lives in that shared file. All are verified genuinely working.
 
 `mmcli-flash`'s report additionally went beyond its two assigned failures: framed as an
 independent correctness audit, it found and fixed 8 further defects the 32-equation suite
 never probes (complex-number crashes, zero-exponent crashes, missing `e`/`pi` evaluation
 fallback, incorrect polynomial limits at infinity, among others) — the one case in this
 benchmark of genuine, verifiable self-directed quality work beyond the assigned target.
+
+`antigravity-flash-3.7`'s repair fixed all 6 baseline misses cleanly (infix fractional-power
+precedence in `engine/ast_nodes.py`, a new recursive symbolic integrator CAS in `engine/integrator.py`,
+an analytical & perturbation limit solver in `engine/limits.py`, ASCII-safe Unicode superscript lexing,
+and bare-function token splitting for `cos3x`), with 41/41 passing unit tests.
 
 The other two engines did not reach what they reported:
 
@@ -192,74 +205,119 @@ The other two engines did not reach what they reported:
   integration and epsilon-based limits) now fail with `TypeError: Unknown node type for
 evaluation`, a real regression: new AST node types added elsewhere in the same fix were
   never plumbed into the shared evaluator. Net: baseline 29/32 → 28/32 after a "successful"
-  repair, and its own report is also the only one of the five with no pasted verification
+  repair, and its own report is also the only one with no pasted verification
   output backing the claim.
 - **`antigravity-gemini-pro` made three separate claims of reaching 32/32, none confirmed.**
   See below.
 
-The self-repair round's most instructive finding wasn't which engine fixed the most bugs — it's that two of five engines' own completion reports didn't match independently re-run results even once, which is the exact risk a developer trusting an agent's 'done, all tests pass' summary faces day to day.
+The self-repair round's most instructive finding wasn't which engine fixed the most bugs — it's that two of the six engines' own completion reports didn't match independently re-run results even once, which is the exact risk a developer trusting an agent's 'done, all tests pass' summary faces day to day.
 
 ---
 
-## 🏆 Scorecard (updated with 32-equation benchmark data)
+## 🏆 Dual Scorecard Leaderboards
 
-### 🥇 Minovative Mind CLI (`using gemini flash 3.6`): 9.2 / 10 — **BENCHMARK WINNER**
+To maintain strict evaluation integrity, the scorecard is structured into two explicit leaderboards rather than forcing a single blended ranking that conflates unaided code generation with iterative self-repair.
 
-- **The Good:** Highest overall score (93.8% first-try), driven primarily by being one of
-  only two engines that implemented CAS integration/limits at all on the first attempt.
-  On pure differentiation (Categories 1–6 + 8), it ties at 92.9% with `mmcli-flash-lite`
-  and `antigravity-flash` — its first-try lead is a scope advantage, not a differentiation-
-  quality advantage. After the self-repair round it reached a genuine, independently
-  re-verified 32/32 (tied with two other engines — see Self-Repair Round below), and its
-  fix report is the only one in the benchmark that went beyond the known failures to find
-  and fix 8 additional defects the 32-equation suite never tests. Zero runtime
-  dependencies, LaTeX export, 43/43 passing unit tests.
-- **Thinking Level Configuration:** Built with `thinkingLevels` un-set, utilizing built-in Google model default **`MEDIUM`** thinking level (out of `MINIMAL, LOW, MEDIUM, HIGH`).
+---
 
-- **The Miss:** Shares the `cos3x` bare-function parsing limitation with Opus and Flash. Top-level `ast.py` naming requires custom loader.
+### 1️⃣ First-Try Leaderboard (Zero-Shot / Unaided Generation)
 
-- **Verdict:** **Superior overall engine.** Highest verified 32-equation accuracy and broadest CAS feature set.
+_Evaluates out-of-the-box model generation capabilities without iterative feedback, bug reports, or manual intervention._
 
-### 🥈 Minovative Mind CLI Flash-Lite (`using gemini flash lite 3.5`): 9.0 / 10 — **BEST LIGHTWEIGHT ENGINE**
+#### 🥇 Minovative Mind CLI (`using gemini flash 3.6`): 9.4 / 10 — **FIRST-TRY WINNER**
 
-- **The Good:** 0-revision clean build with zero external dependencies. Passed **29/32 equations (90.6%)** overall and **26/28 (92.9%)** on differentiation. Fixed standard library import collisions by using `ast_nodes.py`. 16/16 passing unit tests (`pytest`). Features: symbolic differentiation, 15-pass algebraic simplification, numerical Simpson's rule definite integration, limit estimation, AST equation tree visualization (`tree`), step-by-step breakdown cards (`diff -s`), and interactive TUI. Default active engine in `main.py`.
-- **Thinking Level Configuration:** Built with `thinkingLevels` un-set, utilizing built-in Google model default **`MINIMAL`** thinking level (out of `MINIMAL, LOW, MEDIUM, HIGH`).
+- **Score:** **30/32 (93.8%)** overall | **26/28 (92.9%)** diff-only | **43/43 tests** (`pytest`)
+- **Thinking Level:** Built with `thinkingLevels` un-set (Google default: **`MEDIUM`**).
+- **The Good:** Highest first-try score across all 32 equations. One of only two builds to implement full CAS integration and limits out of the box on first attempt. Clean zero-dependency build, LaTeX export, and robust test suite.
+- **The Miss:** Missed `asin(x)+acos(x)` and bare `cos3x` on first attempt. Top-level `ast.py` naming requires custom loader.
+- **Verdict:** **Superior first-try CAS engine.** Broadest first-try capabilities and highest zero-shot accuracy.
 
-- **The Miss:** On first attempt, parsed Unicode exponent characters (such as `x²`) as single variable tokens rather than power nodes, and missed bare `cos3x`. In the self-repair round, it fixed these parsing issues, but its numerical integration/limits regressed (Category 7 dropped to 0/4, net score 28/32) — see Self-Repair Round.
+#### 🥈 Minovative Mind CLI Flash-Lite (`using gemini flash lite 3.5`): 9.0 / 10 — **BEST LIGHTWEIGHT FIRST-TRY ENGINE**
 
-- **Verdict:** **Best lightweight modular engine.** Cleanest package structure, zero namespace collisions, 90.6% 32-equation accuracy, and versatile CLI/TUI capabilities.
+- **Score:** **29/32 (90.6%)** overall | **26/28 (92.9%)** diff-only | **16/16 tests** (`pytest`)
+- **Thinking Level:** Built with `thinkingLevels` un-set (Google default: **`MINIMAL`**).
+- **The Good:** Outstanding zero-shot performance from a lightweight model operating on minimal thinking budget. Outscored all four Antigravity IDE builds on first attempt (90.6% vs. 81.2%, 81.2%, 59.4%, 34.4%). Clean `ast_nodes.py` module naming, 15-pass algebraic simplifier, numerical Simpson's rule integration, and interactive TUI.
+- **The Miss:** Parsed Unicode exponents (`x²`) as single variable tokens with derivative 0, and missed bare `cos3x`.
+- **Verdict:** **Best lightweight engine on a first-try basis.** Proves high agentic prompt-framing efficiency on compact models.
 
-### 🥉 Gemini 3.6 Flash (Antigravity IDE): 8.2 / 10
+#### 🥉 Gemini 3.7 Flash (Antigravity IDE): 8.3 / 10 — **MOST COMPREHENSIVE TUI & AST SCOPE**
 
-- **The Good:** The strongest differentiation-only engine on first attempt. Passed **26/32 equations (81.2%)** baseline overall and **26/28 (92.9%)** on differentiation. After the self-repair round, it reached a genuine, independently re-verified **32/32 (100%)** (tied for 1st place — see Self-Repair Round). Zero runtime dependencies, 17/17 passing tests (`pytest`), clean package structure (`core/ast.py`), and **superior error handling** — explicitly rejects unsupported Unicode characters (`ValueError: Unexpected character`) rather than computing a silent wrong answer.
+- **Score:** **26/32 (81.2%)** overall | **25/28 (89.3%)** diff-only | **35/35 tests** (`pytest`)
+- **Thinking Level:** Built with maximum **`HIGH`** thinking level.
+- **The Good:** Clean zero-revision first-try build with **35/35 passing tests**. Broadest mathematical function library (16 functions including hyperbolic and inverse trig), 2D Unicode Braille graph plotting, multivariable calculus (gradient, Hessian), Taylor series, and extrema/roots classification.
+- **The Miss:** Scope omitted symbolic indefinite integration and limits on first try. Regressed on Unicode safety (silently returned `cos(x)` for `x²` where 3.6 cleanly threw `ValueError`). Ambiguous unparenthesized exponent formatting in radical derivatives (`^-1/3`).
+- **Verdict:** **Most comprehensive feature and visualization envelope**, though initial safety validation lagged behind 3.6.
 
-- **The Miss:** Baseline scope limited strictly to differentiation (no integration or limit engine on first try). Shares the `cos3x` bare-function parsing limitation.
+#### 4️⃣ Gemini 3.6 Flash (Antigravity IDE): 8.2 / 10 — **BEST INPUT SAFETY & ERROR HANDLING**
 
-- **Verdict:** **Best lightweight differentiation engine.** Excellent input validation, clean modular design, and robust test suite.
+- **Score:** **26/32 (81.2%)** overall | **26/28 (92.9%)** diff-only | **17/17 tests** (`pytest`)
+- **Thinking Level:** Built with maximum **`HIGH`** thinking level.
+- **The Good:** Clean zero-dependency build, 17/17 unit tests, and superior input validation — explicitly rejected unsupported Unicode characters (`ValueError`) rather than computing silent wrong answers.
+- **The Miss:** First-try scope strictly limited to differentiation (no symbolic integration or limit solver).
+- **Verdict:** **Cleanest input safety and error handling** among the differentiation-focused engines.
 
-### 4️⃣ Claude Opus 4.6 (Antigravity IDE): 6.0 / 10
+#### 5️⃣ Claude Opus 4.6 (Antigravity IDE): 6.0 / 10 — **BEST CURSES TUI PRESENTATION**
 
-- **The Good:** Flawless zero-revision build, zero runtime dependencies, and the most visually polished 3-pane Curses TUI interface. After the self-repair round, it reached a genuine, independently re-verified **32/32 (100%)** (tied for 1st place — see Self-Repair Round).
+- **Score:** **19/32 (59.4%)** overall | **19/28 (67.9%)** diff-only | Zero external dependencies
+- **Thinking Level:** Built with maximum **`Thinking`** level.
+- **The Good:** Flawless zero-revision build, zero runtime dependencies, and the most visually polished 3-pane Curses TUI interface.
+- **The Miss:** Silent wrong answers on radical functions (lacked `sqrt` node support) and operator precedence bug on `-x^2` parsed as `(-x)^2`.
+- **Verdict:** **Exceptional UI design**, but vulnerable first-try parsing and validation.
 
-- **The Miss:** Baseline first-try passed **19/32 equations (59.4%)**. Vulnerable to silent wrong answers in baseline: lacks `sqrt` node support (producing `sqrt * (...)` variable multiplication) and silently drops Unicode exponents/dots without error, calculating derivatives for different expressions.
+#### 🔴 Gemini 3.1 Pro (Antigravity IDE): 2.5 / 10 — **DISQUALIFIED**
 
-- **Verdict:** **Best UI presentation, but vulnerable input validation.** Strong visual polish undercut by silent failure risks on radical functions and non-ASCII input on first try.
+- **Score:** **11/32 (34.4%)** overall | **11/28 (39.3%)** diff-only | 0 automated tests
+- **Thinking Level:** Built with maximum **`HIGH`** thinking level.
+- **The Fatal:** Violated zero-dependency constraint (`textual`, `plotext`), module collision on `ast.py`, and `ParseError` on basic transcendental functions.
+- **Verdict:** **Disqualified.** Failed core architectural constraints and baseline syntax parsing.
 
-### 🔴 Gemini 3.1 Pro (Antigravity IDE): 2.5 / 10 — **DISQUALIFIED**
+---
 
-- **The Good:** Comprehensive multi-pane TUI architecture plan on paper.
+### 2️⃣ Post-Repair Leaderboard (Autonomous Debugging & Verification)
 
-- **The Miss:** Failed **21/32 equations (34.4%)** baseline, throwing `ParseError` on basic trigonometric and nested function syntax. Self-repair claims of 32/32 remained unconfirmed at 28/32 — see Self-Repair Round & Evaluation Integrity.
+_Evaluates an agent's ability to diagnose root causes, patch defects, avoid regressions, and verify its own work honestly when presented with failing test inputs._
 
-- **The Fatal:** Violated the zero-dependency constraint by requiring `textual` and `plotext`, suffered module shadowing (`ast.py` colliding with Python's standard `ast`), relative import bugs, and zero automated tests.
+#### 🥇 Minovative Mind CLI (`using gemini flash 3.6`): 9.4 / 10 — **CO-WINNER (AUDIT DEPTH)**
 
-- **Verdict:** **Disqualified.** Failed core architectural constraints, dependency limits, and basic syntax parsing across the 32-equation suite.
+- **Score:** **32/32 (100.0%)** verified | **43/43 tests** (`pytest`) | ✅ Self-report matched oracle exactly
+- **The Good:** Framed its repair as a comprehensive correctness audit. Beyond fixing its 2 assigned benchmark failures (`asin+acos`, `cos3x`), it independently discovered and resolved **8 additional defects** not covered in the benchmark suite (complex numbers, zero-exponent crashes, polynomial limits at infinity). Full test suite growth verified with pasted output.
+- **Verdict:** **Top-tier repair rigor.** Demonstrates verifiable self-directed engineering beyond the prompt.
+
+#### 🥇 Gemini 3.7 Flash (Antigravity IDE): 9.3 / 10 — **CO-WINNER (FEATURE BREADTH & TUI)**
+
+- **Score:** **32/32 (100.0%)** verified | **41/41 tests** (`pytest`) | ✅ Self-report matched oracle exactly
+- **The Good:** Flawless 6-for-6 defect resolution. Built a full recursive symbolic integration CAS (`engine/integrator.py`), analytical L'Hôpital and perturbation limit solver (`engine/limits.py`), Unicode superscript exponent lexing, and bare-function splitting. Expanded unit test suite from 35/35 to 41/41 passing tests.
+- **Verdict:** **Most capable overall CAS & TUI post-repair.** Reached 100% verified accuracy across all 8 mathematical categories.
+
+#### 🥇 Gemini 3.6 Flash (Antigravity IDE): 8.8 / 10 — **CO-WINNER (PERFECT 32/32 REDEMPTION)**
+
+- **Score:** **32/32 (100.0%)** verified | **17/17 tests** (`pytest`) | ✅ Self-report matched oracle exactly
+- **The Good:** Cleanly implemented integration and limit subsystems, resolved bare-function parsing, and grew test suite with verified pasted output.
+- **Verdict:** **Flawless self-repair execution.** Perfect 32/32 recovery from a differentiation-only baseline.
+
+#### 🥇 Claude Opus 4.6 (Antigravity IDE): 7.5 / 10 — **CO-WINNER (LARGEST BENCHMARK RECOVERY)**
+
+- **Score:** **32/32 (100.0%)** verified | ✅ Self-report matched oracle exactly
+- **The Good:** Achieved the single largest score improvement in the benchmark (19/32 ➔ 32/32, +40.6%). Fixed operator precedence, added `sqrt` node support, and implemented integration/limits with detailed grammar diffs.
+- **Verdict:** **Exceptional repair capability.** Fully redeemed its visual polish with 100% mathematical accuracy.
+
+#### 🥈 Minovative Mind CLI Flash-Lite (`using gemini flash lite 3.5`): 8.0 / 10 — **REPAIR REGRESSION**
+
+- **Score:** **28/32 (87.5%)** verified (down from 29/32) | ⚠️ Self-report did not match oracle
+- **The Miss:** Successfully resolved Unicode and bare-function parsing, but claimed symbolic integration engine never shipped (ID 25 unchanged). Unplumbed AST changes caused previously-passing numerical integration/limits to break (`TypeError`), dropping Category 7 from 3/4 to 0/4. Only report without pasted verification output.
+- **Verdict:** **Cautionary example of unverified self-repair.** Strong first-try engine whose repair round introduced unintended regressions.
+
+#### 🔴 Gemini 3.1 Pro (Antigravity IDE): 2.5 / 10 — **UNVERIFIED CLAIMS**
+
+- **Score:** **28/32 (87.5%)** verified | ❌ Three separate unconfirmed 32/32 claims
+- **The Miss:** Claimed 32/32 resolution across three separate reports, but independent re-runs confirmed `NotImplementedError` stubs remained untouched for IDs 25–28.
+- **Verdict:** **Disqualified.** Exemplifies the risk of relying on self-reported agent summaries without independent oracle verification.
 
 ---
 
 ## ⚠️ Evaluation Integrity: `antigravity-gemini-pro`'s Self-Reports vs. Independent Re-Verification
 
-Three engines needed the shared benchmark runner edited to wire in new integration/limit
+Four engines needed the shared benchmark runner edited to wire in new integration/limit
 adapters — that's a consequence of the runner's own design, not a violation by itself.
 The distinguishing issue for `antigravity-gemini-pro` is that its runner edits and
 self-reported fixes have not once corresponded to code that actually works when

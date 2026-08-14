@@ -7,6 +7,7 @@ Unified entry point supporting all calculus project implementations under all-pr
 3. antigravity-flash-calculus   (Antigravity IDE - Gemini 3.6 Flash Engine TUI)
 4. antigravity-opus-calculus    (Antigravity IDE - Claude Opus 4.6 Engine TUI)
 5. antigravity-gemini-pro-calculus (Antigravity IDE - Gemini 3.1 Pro Engine TUI)
+6. antigravity-flash-3.7-calculus (Antigravity IDE - Gemini 3.7 Flash Engine TUI & Braille Plotter)
 
 Examples:
   python3 main.py                          # Run active/saved default calculus engine
@@ -14,6 +15,8 @@ Examples:
   python3 main.py -p lite                  # Run mmcli-flash-lite-calculus (Flash Lite)
   python3 main.py -p opus                  # Run antigravity-opus-calculus (Claude Opus 4.6)
   python3 main.py -p ag-flash              # Run antigravity-flash-calculus (Antigravity Flash)
+  python3 main.py -p ag-flash-3.7          # Run antigravity-flash-3.7-calculus (Gemini 3.7 Flash)
+  python3 main.py --benchmark              # Run 32-equation oracle benchmark suite
   python3 main.py --select                 # Interactively select/switch calculus engine
   python3 main.py --list-projects          # List all available projects & aliases
 """
@@ -57,6 +60,12 @@ PROJECTS: Dict[str, Dict[str, Any]] = {
         "aliases": ["antigravity-gemini-pro", "pro", "ag-pro", "gemini-pro", "5"],
         "title": "Antigravity IDE - Gemini 3.1 Pro Engine (Textual TUI)",
         "type": "ag_pro",
+    },
+    "antigravity-flash-3.7-calculus": {
+        "dir_name": "antigravity-flash-3.7-calculus",
+        "aliases": ["antigravity-flash-3.7", "flash-3.7", "ag-flash-3.7", "ag-3.7", "3.7", "6"],
+        "title": "Antigravity IDE - Gemini 3.7 Flash Engine (Textual TUI & Braille Plotter)",
+        "type": "ag_flash_37",
     },
 }
 
@@ -216,6 +225,17 @@ def run_project(info: Dict[str, Any]):
         )
         main_mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(main_mod)
+
+    elif proj_type == "ag_flash_37":
+        if str(calculus_dir) not in sys.path:
+            sys.path.insert(0, str(calculus_dir))
+
+        for mod in ["engine", "tui", "cli"]:
+            if mod in sys.modules:
+                del sys.modules[mod]
+
+        from cli import run_cli
+        sys.exit(run_cli())
 
 
 def main():

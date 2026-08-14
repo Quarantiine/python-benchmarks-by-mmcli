@@ -6,6 +6,7 @@ Run Full Benchmark (All Engines, saves to oracle_graded):
     python3 main.py --benchmark
 
 Run Individual Benchmarks (saves to multi_test):
+    python3 main.py -p ag-flash-3.7 --benchmark
     python3 main.py -p ag-flash --benchmark
     python3 main.py -p pro --benchmark
     python3 main.py -p opus --benchmark
@@ -19,7 +20,7 @@ Key differences from the earlier version:
   2. Engine subprocesses do ONE job: attempt the computation and report back
      either a raw output string or an error. All grading/classification
      happens in the parent process, through ONE shared function
-     (`grade_case`) applied identically to all five engines. No engine gets
+     (`grade_case`) applied identically to all six engines. No engine gets
      a bespoke try/except that changes what counts as a pass.
   3. Boundary-condition cases (Unicode input, bare function names, syntax
      errors) are graded with the same rubric for everyone:
@@ -569,6 +570,29 @@ def LIM_FN(s, point):
     raise NotImplementedError("not implemented in this build")
 """,
     },
+    {
+        "name": "antigravity-flash-3.7-calculus",
+        "title": "antigravity-flash-3.7 (Gemini 3.7 Flash)",
+        "project_path": "all-projects/calculus/antigravity-flash-3.7-calculus",
+        "import_block": """
+from engine.parser import parse_expr
+from engine.differentiator import diff, definite_integral_approx
+from engine.integrator import integrate
+from engine.limits import limit
+
+def DIFF_FN(s):
+    return str(diff(s, var="x"))
+
+def INT_FN(s):
+    return str(integrate(s, var="x"))
+
+def DEFINT_FN(s, lo, hi):
+    return definite_integral_approx(parse_expr(s), var="x", a=lo, b=hi)
+
+def LIM_FN(s, point):
+    return limit(parse_expr(s), var="x", point=point)
+""",
+    },
 ]
 
 
@@ -606,6 +630,12 @@ ALIAS_MAP = {
     "ag-flash": "antigravity-flash-calculus",
     "antigravity-flash": "antigravity-flash-calculus",
     "antigravity-flash-calculus": "antigravity-flash-calculus",
+    "ag-flash-3.7": "antigravity-flash-3.7-calculus",
+    "flash-3.7": "antigravity-flash-3.7-calculus",
+    "antigravity-flash-3.7": "antigravity-flash-3.7-calculus",
+    "antigravity-flash-3.7-calculus": "antigravity-flash-3.7-calculus",
+    "ag-3.7": "antigravity-flash-3.7-calculus",
+    "3.7": "antigravity-flash-3.7-calculus",
     "opus": "antigravity-opus-calculus",
     "antigravity-opus": "antigravity-opus-calculus",
     "antigravity-opus-calculus": "antigravity-opus-calculus",
