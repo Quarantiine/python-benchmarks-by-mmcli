@@ -4,15 +4,17 @@ Symbolic Calculus Engine & Interactive Terminal User Interface (TUI).
 Unified entry point supporting all calculus project implementations under all-projects/calculus:
 1. mmcli-flash-calculus         (Minovative Mind CLI - Gemini 3.6 Flash CAS Engine)
 2. mmcli-flash-lite-calculus    (Minovative Mind CLI - Flash Lite Engine)
-3. antigravity-flash-calculus   (Antigravity IDE - Gemini 3.6 Flash Engine TUI)
-4. antigravity-opus-calculus    (Antigravity IDE - Claude Opus 4.6 Engine TUI)
-5. antigravity-gemini-pro-calculus (Antigravity IDE - Gemini 3.1 Pro Engine TUI)
-6. antigravity-flash-3.7-calculus (Antigravity IDE - Gemini 3.7 Flash Engine TUI & Braille Plotter)
+3. mmcli-flash-3.7-calculus     (Minovative Mind CLI - Gemini 3.7 Flash CAS & TUI)
+4. antigravity-flash-calculus   (Antigravity IDE - Gemini 3.6 Flash Engine TUI)
+5. antigravity-opus-calculus    (Antigravity IDE - Claude Opus 4.6 Engine TUI)
+6. antigravity-gemini-pro-calculus (Antigravity IDE - Gemini 3.1 Pro Engine TUI)
+7. antigravity-flash-3.7-calculus (Antigravity IDE - Gemini 3.7 Flash Engine TUI & Braille Plotter)
 
 Examples:
   python3 main.py                          # Run active/saved default calculus engine
   python3 main.py -p flash                 # Run mmcli-flash-calculus (Gemini 3.6 Flash CAS)
   python3 main.py -p lite                  # Run mmcli-flash-lite-calculus (Flash Lite)
+  python3 main.py -p mm-3.7                # Run mmcli-flash-3.7-calculus (Gemini 3.7 Flash CAS)
   python3 main.py -p opus                  # Run antigravity-opus-calculus (Claude Opus 4.6)
   python3 main.py -p ag-flash              # Run antigravity-flash-calculus (Antigravity Flash)
   python3 main.py -p ag-flash-3.7          # Run antigravity-flash-3.7-calculus (Gemini 3.7 Flash)
@@ -66,6 +68,12 @@ PROJECTS: Dict[str, Dict[str, Any]] = {
         "aliases": ["antigravity-flash-3.7", "flash-3.7", "ag-flash-3.7", "ag-3.7", "3.7", "6"],
         "title": "Antigravity IDE - Gemini 3.7 Flash Engine (Textual TUI & Braille Plotter)",
         "type": "ag_flash_37",
+    },
+    "mmcli-flash-3.7-calculus": {
+        "dir_name": "mmcli-flash-3.7-calculus",
+        "aliases": ["mmcli-flash-3.7", "mmcli-3.7", "mm-3.7", "mm-flash-3.7", "7"],
+        "title": "Minovative Mind CLI - Gemini 3.7 Flash (Full CAS Engine & TUI)",
+        "type": "mmcli_flash_37",
     },
 }
 
@@ -231,6 +239,17 @@ def run_project(info: Dict[str, Any]):
             sys.path.insert(0, str(calculus_dir))
 
         for mod in ["engine", "tui", "cli"]:
+            if mod in sys.modules:
+                del sys.modules[mod]
+
+        from cli import run_cli
+        sys.exit(run_cli())
+
+    elif proj_type == "mmcli_flash_37":
+        if str(calculus_dir) not in sys.path:
+            sys.path.insert(0, str(calculus_dir))
+
+        for mod in ["ast_nodes", "parser", "simplifier", "tracker", "differentiator", "limits", "integrator", "plotter", "tree_renderer", "derivation_view", "tui_core", "tui", "cli", "app"]:
             if mod in sys.modules:
                 del sys.modules[mod]
 
