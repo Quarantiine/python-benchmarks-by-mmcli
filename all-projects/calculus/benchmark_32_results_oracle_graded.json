@@ -1,7 +1,7 @@
 {
   "mmcli-flash-calculus": {
     "title": "mmcli-flash (Gemini 3.6 Flash Full CAS)",
-    "time": 0.041754722595214844,
+    "time": 0.08665609359741211,
     "results": [
       {
         "id": 1,
@@ -167,7 +167,7 @@
   },
   "mmcli-flash-lite-calculus": {
     "title": "mmcli-flash-lite (Gemini 3.5 Flash-Lite)",
-    "time": 0.034895896911621094,
+    "time": 0.03743696212768555,
     "results": [
       {
         "id": 1,
@@ -333,7 +333,7 @@
   },
   "antigravity-flash-calculus": {
     "title": "antigravity-flash (Gemini 3.6 Flash)",
-    "time": 0.03345513343811035,
+    "time": 0.04753303527832031,
     "results": [
       {
         "id": 1,
@@ -499,7 +499,7 @@
   },
   "antigravity-opus-calculus": {
     "title": "antigravity-opus (Claude Opus 4.6)",
-    "time": 0.028103113174438477,
+    "time": 0.029361724853515625,
     "results": [
       {
         "id": 1,
@@ -665,7 +665,7 @@
   },
   "antigravity-gemini-pro-calculus": {
     "title": "antigravity-gemini-pro (Gemini 3.1 Pro)",
-    "time": 0.05950593948364258,
+    "time": 0.06448101997375488,
     "results": [
       {
         "id": 1,
@@ -831,7 +831,7 @@
   },
   "antigravity-flash-3.7-calculus": {
     "title": "antigravity-flash-3.7 (Gemini 3.7 Flash)",
-    "time": 0.06366109848022461,
+    "time": 0.0659940242767334,
     "results": [
       {
         "id": 1,
@@ -997,7 +997,7 @@
   },
   "mmcli-flash-3.7-calculus": {
     "title": "mmcli-flash-3.7 (Gemini 3.7 Flash Full CAS)",
-    "time": 0.06393885612487793,
+    "time": 0.06526684761047363,
     "results": [
       {
         "id": 1,
